@@ -10,6 +10,8 @@ import { PetSizeService } from './services/pet-size.service';
 import { PetBreedService } from './services/pet-breed.service';
 import { PetTypeService } from './services/pet-type.service';
 
+import { DatabaseModule } from 'src/database/database.module';
+
 @Module({
   controllers: [
     PetController,
@@ -18,5 +20,6 @@ import { PetTypeService } from './services/pet-type.service';
     PetSizeController,
   ],
   providers: [PetService, PetTypeService, PetBreedService, PetSizeService],
+  imports: [DatabaseModule],
 })
 export class PetModule {}

@@ -7,9 +7,9 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { PetTypeService } from './pet-type.service';
-import { CreatePetTypeDto } from './dto/create-pet-type.dto';
-import { UpdatePetTypeDto } from './dto/update-pet-type.dto';
+import { CreatePetTypeDto } from '../dto/create-pet-type.dto';
+import { UpdatePetTypeDto } from '../dto/update-pet-type.dto';
+import { PetTypeService } from '../services/pet-type.service';
 
 @Controller('pet-type')
 export class PetTypeController {

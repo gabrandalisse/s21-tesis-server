@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PetSizeService } from './pet-size.service';
-import { CreatePetSizeDto } from './dto/create-pet-size.dto';
-import { UpdatePetSizeDto } from './dto/update-pet-size.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { CreatePetSizeDto } from '../dto/create-pet-size.dto';
+import { UpdatePetSizeDto } from '../dto/update-pet-size.dto';
+import { PetSizeService } from '../services/pet-size.service';
 
 @Controller('pet-size')
 export class PetSizeController {

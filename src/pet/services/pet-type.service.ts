@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePetTypeDto } from './dto/create-pet-type.dto';
-import { UpdatePetTypeDto } from './dto/update-pet-type.dto';
-import { PetType } from './entities/pet-type.entity';
+import { CreatePetTypeDto } from '../dto/create-pet-type.dto';
+import { UpdatePetTypeDto } from '../dto/update-pet-type.dto';
+import { PetType } from '../entities/pet-type.entity';
 
 @Injectable()
 export class PetTypeService {

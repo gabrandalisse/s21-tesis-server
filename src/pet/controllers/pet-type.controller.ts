@@ -1,14 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { CreatePetTypeDto } from '../dto/create-pet-type.dto';
-import { UpdatePetTypeDto } from '../dto/update-pet-type.dto';
 import { PetTypeService } from '../services/pet-type.service';
 
 @Controller('pet-type')
@@ -25,18 +16,8 @@ export class PetTypeController {
     return this.petTypeService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.petTypeService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePetTypeDto: UpdatePetTypeDto) {
-    return this.petTypeService.update(+id, updatePetTypeDto);
-  }
-
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.petTypeService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.petTypeService.remove(id);
   }
 }

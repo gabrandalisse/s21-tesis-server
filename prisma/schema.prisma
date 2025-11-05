@@ -15,3 +15,22 @@ model PetSize {
 
   @@map("pet_sizes")
 }
+
+model PetType {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  createdAt DateTime   @default(now()) @map("created_at")
+  breeds    PetBreed[]
+
+  @@map("pet_types")
+}
+
+model PetBreed {
+  id        Int      @id @default(autoincrement())
+  name      String
+  typeId    Int      @map("type_id")
+  type      PetType  @relation(fields: [typeId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")  
+
+  @@map("pet_breeds")
+}

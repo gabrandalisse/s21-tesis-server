@@ -7,9 +7,7 @@ import { DatabaseService } from 'src/database/database.service';
 export class PetSizeService {
   constructor(private readonly dbService: DatabaseService) {}
 
-  public async create(
-    createPetSizeDto: CreatePetSizeDto,
-  ): Promise<{ id: number }> {
+  public async create(createPetSizeDto: CreatePetSizeDto): Promise<PetSize> {
     return await this.dbService.petSize.create({
       data: createPetSizeDto,
     });

@@ -1,1 +1,5 @@
-export class PetType {}
+export class PetType {
+  id: number;
+  name: string;
+  breeds_id?: number[];
+}

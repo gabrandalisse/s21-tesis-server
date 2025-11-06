@@ -4,7 +4,6 @@ export class Pet {
   name: string;
   typeId: number;
   breedId: number;
-  // TODO tipify color
   colorId: number;
   sizeId: number;
   // TODO tipify sex

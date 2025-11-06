@@ -26,6 +26,14 @@ model PetColor {
   @@map("pet_colors")
 }
 
+model PetSex {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("pet_sexes")
+}
+
 model PetType {
   id        Int        @id @default(autoincrement())
   name      String     @unique

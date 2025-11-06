@@ -1,12 +1,12 @@
 export class Pet {
   id: number;
+  // TODO create owner logic
   ownerId: number;
   name: string;
   typeId: number;
   breedId: number;
   colorId: number;
   sizeId: number;
-  // TODO tipify sex
   sexId: number;
   age: number;
   photoUrl: string;

@@ -10,15 +10,7 @@ export class PetService {
   public async create(createPetDto: CreatePetDto): Promise<Pet> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return (await this.dbService.pet.create({
-      data: {
-        name: createPetDto.name,
-        age: createPetDto.age,
-        sizeId: createPetDto.sizeId,
-        breedId: createPetDto.breedId,
-        typeId: createPetDto.typeId,
-        photoUrl: createPetDto.photoUrl,
-        distinctiveCharacteristics: createPetDto.distinctiveCharacteristics,
-      },
+      data: createPetDto,
     })) as any;
   }
 

@@ -30,6 +30,7 @@ model PetSex {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   createdAt DateTime @default(now()) @map("created_at")
+  pets      Pet[]
 
   @@map("pet_sexes")
 }
@@ -68,16 +69,19 @@ model Pet {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  // TODO model owner, sex, color
+  // TODO model owner
 
   typeId Int     @map("type_id")
   type   PetType @relation(fields: [typeId], references: [id])
 
+  sexId Int    @map("sex_id")
+  sex   PetSex @relation(fields: [sexId], references: [id])
+
+  colorId Int      @map("color_id")
+  color   PetColor @relation(fields: [colorId], references: [id])
+
   photoUrl                   String
   distinctiveCharacteristics String?
-
-  petColor                   PetColor @relation(fields: [petColorId], references: [id])
-  petColorId                 Int
 
   @@map("pets")
 }

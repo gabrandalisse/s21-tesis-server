@@ -1,52 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { PetBreed } from '../entities/pet-breed.entity';
 import { CreatePetBreedDto } from '../dto/create-pet-breed.dto';
-import { UpdatePetBreedDto } from '../dto/update-pet-breed.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class PetBreedService {
-  private readonly petBreeds: PetBreed[] = [];
+  constructor(private readonly dbService: DatabaseService) {}
 
-  create(createPetBreedDto: CreatePetBreedDto): PetBreed {
-    const newPetBreed = {
-      id: this.petBreeds.length + 1,
-      ...createPetBreedDto,
-    };
-
-    this.petBreeds.push(newPetBreed);
-
-    return newPetBreed;
+  public async create(createPetBreedDto: CreatePetBreedDto): Promise<PetBreed> {
+    return await this.dbService.petBreed.create({
+      data: createPetBreedDto,
+    });
   }
 
-  findAll() {
-    return this.petBreeds;
+  public async findAll(): Promise<PetBreed[]> {
+    return await this.dbService.petBreed.findMany();
   }
 
-  findOne(id: number): PetBreed | undefined {
-    return this.petBreeds.find((breed) => breed.id === id);
-  }
+  public async remove(id: number): Promise<{ deleted: boolean }> {
+    const result = await this.dbService.petBreed.delete({
+      where: { id },
+    });
 
-  update(
-    id: number,
-    updatePetBreedDto: UpdatePetBreedDto,
-  ): PetBreed | undefined {
-    const petBreed = this.petBreeds.find((breed) => breed.id === id);
-
-    if (petBreed) {
-      Object.assign(petBreed, updatePetBreedDto);
-    }
-
-    return petBreed;
-  }
-
-  remove(id: number): { deleted: boolean } {
-    const index = this.petBreeds.findIndex((breed) => breed.id === id);
-
-    if (index !== -1) {
-      this.petBreeds.splice(index, 1);
-      return { deleted: true };
-    }
-
-    return { deleted: false };
+    return { deleted: result !== null };
   }
 }

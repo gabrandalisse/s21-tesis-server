@@ -1,26 +1,55 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePetDto } from '../dto/create-pet.dto';
-import { UpdatePetDto } from '../dto/update-pet.dto';
+import { DatabaseService } from 'src/database/database.service';
+import { Pet } from '../entities/pet.entity';
 
 @Injectable()
 export class PetService {
-  create(createPetDto: CreatePetDto) {
-    return 'This action adds a new pet' + JSON.stringify(createPetDto);
+  constructor(private readonly dbService: DatabaseService) {}
+
+  public async create(createPetDto: CreatePetDto): Promise<Pet> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return (await this.dbService.pet.create({
+      data: {
+        name: createPetDto.name,
+        age: createPetDto.age,
+        sizeId: createPetDto.sizeId,
+        breedId: createPetDto.breedId,
+        typeId: createPetDto.typeId,
+        photoUrl: createPetDto.photoUrl,
+        distinctiveCharacteristics: createPetDto.distinctiveCharacteristics,
+      },
+    })) as any;
   }
 
-  findAll() {
-    return `This action returns all pet`;
+  public async findAll(): Promise<Pet[]> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return (await this.dbService.pet.findMany({
+      include: {
+        type: true,
+        breed: true,
+        size: true,
+      },
+    })) as any;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pet`;
+  public async findOne(id: number): Promise<Pet | null> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return (await this.dbService.pet.findUnique({
+      where: { id },
+      include: {
+        type: true,
+        breed: true,
+        size: true,
+      },
+    })) as any;
   }
 
-  update(id: number, updatePetDto: UpdatePetDto) {
-    return `This action updates a #${id} pet` + JSON.stringify(updatePetDto);
-  }
+  public async remove(id: number): Promise<{ deleted: boolean }> {
+    const result = await this.dbService.pet.delete({
+      where: { id },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} pet`;
+    return { deleted: result !== null };
   }
 }

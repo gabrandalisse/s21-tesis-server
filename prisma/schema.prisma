@@ -11,7 +11,8 @@ datasource db {
 model PetSize {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  createdAt DateTime @default(now()) @map("created_at")  
+  createdAt DateTime @default(now()) @map("created_at")
+  pets      Pet[]
 
   @@map("pet_sizes")
 }
@@ -21,6 +22,7 @@ model PetType {
   name      String     @unique
   createdAt DateTime   @default(now()) @map("created_at")
   breeds    PetBreed[]
+  pets      Pet[]
 
   @@map("pet_types")
 }
@@ -30,7 +32,32 @@ model PetBreed {
   name      String
   typeId    Int      @map("type_id")
   type      PetType  @relation(fields: [typeId], references: [id])
-  createdAt DateTime @default(now()) @map("created_at")  
+  createdAt DateTime @default(now()) @map("created_at")
+  pets      Pet[]
 
   @@map("pet_breeds")
+}
+
+model Pet {
+  id   Int    @id @default(autoincrement())
+  name String
+  age  Int
+
+  sizeId Int     @map("size_id")
+  size   PetSize @relation(fields: [sizeId], references: [id])
+
+  breedId Int      @map("breed_id")
+  breed   PetBreed @relation(fields: [breedId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // TODO model owner, sex, color
+
+  typeId Int     @map("type_id")
+  type   PetType @relation(fields: [typeId], references: [id])
+
+  photoUrl                   String
+  distinctiveCharacteristics String?
+
+  @@map("pets")
 }

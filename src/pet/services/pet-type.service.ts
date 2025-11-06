@@ -13,8 +13,10 @@ export class PetTypeService {
     });
   }
 
-  public findAll(): Promise<PetType[]> {
-    return this.dbService.petType.findMany();
+  public findAll(withBreeds: boolean = false): Promise<PetType[]> {
+    return this.dbService.petType.findMany({
+      include: withBreeds ? { breeds: true } : undefined,
+    });
   }
 
   public async remove(id: number): Promise<{ deleted: boolean }> {

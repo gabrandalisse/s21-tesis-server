@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { CreatePetTypeDto } from '../dto/create-pet-type.dto';
 import { PetTypeService } from '../services/pet-type.service';
 
@@ -12,8 +20,8 @@ export class PetTypeController {
   }
 
   @Get()
-  findAll() {
-    return this.petTypeService.findAll();
+  findAll(@Query('withBreeds') withBreeds: string) {
+    return this.petTypeService.findAll(withBreeds === 'true');
   }
 
   @Delete(':id')

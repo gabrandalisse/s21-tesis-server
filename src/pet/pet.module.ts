@@ -11,6 +11,8 @@ import { PetService } from './services/pet.service';
 import { PetSizeService } from './services/pet-size.service';
 import { PetBreedService } from './services/pet-breed.service';
 import { PetTypeService } from './services/pet-type.service';
+import { PetColorService } from './services/pet-color.service';
+import { PetSexService } from './services/pet-sex.service';
 
 import { DatabaseModule } from 'src/database/database.module';
 
@@ -23,7 +25,14 @@ import { DatabaseModule } from 'src/database/database.module';
     PetColorController,
     PetSexController,
   ],
-  providers: [PetService, PetTypeService, PetBreedService, PetSizeService],
+  providers: [
+    PetService,
+    PetTypeService,
+    PetBreedService,
+    PetSizeService,
+    PetColorService,
+    PetSexService,
+  ],
   imports: [DatabaseModule],
 })
 export class PetModule {}

@@ -95,4 +95,6 @@ model User {
   location  String
   createdAt DateTime @default(now()) @map("created_at")
   pets      Pet[]
+
+  @@map("users")
 }

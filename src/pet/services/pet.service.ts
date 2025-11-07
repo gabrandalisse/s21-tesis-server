@@ -21,6 +21,9 @@ export class PetService {
         type: true,
         breed: true,
         size: true,
+        sex: true,
+        color: true,
+        user: true,
       },
     })) as any;
   }
@@ -33,6 +36,9 @@ export class PetService {
         type: true,
         breed: true,
         size: true,
+        sex: true,
+        color: true,
+        user: true,
       },
     })) as any;
   }

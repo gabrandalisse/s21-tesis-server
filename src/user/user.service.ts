@@ -17,7 +17,20 @@ export class UserService {
   }
 
   public async findAll(): Promise<User[]> {
-    const models = await this.dbService.user.findMany();
+    const models = await this.dbService.user.findMany({
+      include: {
+        pets: {
+          include: {
+            type: true,
+            breed: true,
+            size: true,
+            sex: true,
+            color: true,
+          },
+        },
+      },
+    });
+
     return UserMapper.toDomainArray(models);
   }
 

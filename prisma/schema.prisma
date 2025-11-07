@@ -69,7 +69,8 @@ model Pet {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  // TODO model owner
+  userId Int     @map("user_id")
+  user   User    @relation(fields: [userId], references: [id])
 
   typeId Int     @map("type_id")
   type   PetType @relation(fields: [typeId], references: [id])
@@ -84,4 +85,14 @@ model Pet {
   distinctiveCharacteristics String?
 
   @@map("pets")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  location  String
+  createdAt DateTime @default(now()) @map("created_at")
+  pets      Pet[]
 }

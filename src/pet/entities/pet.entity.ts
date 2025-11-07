@@ -1,7 +1,6 @@
 export class Pet {
   id: number;
-  // TODO create owner logic
-  ownerId: number;
+  userId: number;
   name: string;
   typeId: number;
   breedId: number;

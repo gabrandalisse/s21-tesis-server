@@ -5,7 +5,7 @@ export class CreatePetDto {
   @IsNumber()
   @IsPositive()
   @Transform(({ value }) => Number(value))
-  ownerId: number;
+  userId: number;
 
   @IsString()
   name: string;

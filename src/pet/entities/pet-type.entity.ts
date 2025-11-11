@@ -1,6 +1,8 @@
 export class PetType {
-  id: number;
-  name: string;
-  breeds_id?: number[];
-  createdAt: Date;
+  constructor(
+    private readonly id: number,
+    private readonly name: string,
+    private readonly createdAt: Date,
+    private readonly breeds_id?: number[],
+  ) {}
 }

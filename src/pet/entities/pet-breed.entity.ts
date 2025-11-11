@@ -1,5 +1,8 @@
 export class PetBreed {
-  id: number;
-  name: string;
-  // createdAt: Date;
+  constructor(
+    private readonly id: number,
+    private readonly name: string,
+    private readonly typeId: number,
+    private readonly createdAt: Date,
+  ) {}
 }

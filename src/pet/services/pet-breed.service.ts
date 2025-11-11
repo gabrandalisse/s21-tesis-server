@@ -2,19 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { PetBreed } from '../entities/pet-breed.entity';
 import { CreatePetBreedDto } from '../dto/create-pet-breed.dto';
 import { DatabaseService } from 'src/database/database.service';
+import PetBreedMapper from '../mappers/pet-breed.mapper';
 
 @Injectable()
 export class PetBreedService {
   constructor(private readonly dbService: DatabaseService) {}
 
   public async create(createPetBreedDto: CreatePetBreedDto): Promise<PetBreed> {
-    return await this.dbService.petBreed.create({
+    const result = await this.dbService.petBreed.create({
       data: createPetBreedDto,
     });
+    return PetBreedMapper.toDomain(result);
   }
 
   public async findAll(): Promise<PetBreed[]> {
-    return await this.dbService.petBreed.findMany();
+    const results = await this.dbService.petBreed.findMany();
+    return PetBreedMapper.toDomainArray(results);
   }
 
   public async remove(id: number): Promise<{ deleted: boolean }> {

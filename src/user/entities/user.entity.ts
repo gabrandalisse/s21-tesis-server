@@ -7,5 +7,5 @@ export class User {
   password: string;
   location: string;
   createdAt: Date;
-  pets: Pet[];
+  pets?: Pet[];
 }

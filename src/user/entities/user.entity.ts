@@ -1,11 +1,10 @@
-import { Pet } from 'src/pet/entities/pet.entity';
-
 export class User {
-  id: number;
-  email: string;
-  name: string;
-  password: string;
-  location: string;
-  createdAt: Date;
-  pets?: Pet[];
+  constructor(
+    private readonly id: number,
+    private readonly email: string,
+    private readonly name: string,
+    private readonly password: string,
+    private readonly location: string,
+    private readonly createdAt: Date,
+  ) {}
 }

@@ -3,6 +3,7 @@ import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import UserMapper from '../mappers/user.mapper';
 import { User } from '../entities/user.entity';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,11 +14,10 @@ export class UserService {
   public async create(createUserDto: CreateUserDto): Promise<User> {
     const model = await this.dbService.user.create({
       data: createUserDto,
+      include: this.includes,
     });
 
-    const entity = await this.findOne(model.id);
-    if (!entity) throw new Error('user creation failed');
-    else return entity;
+    return UserMapper.toDomain(model);
   }
 
   public async findAll(): Promise<User[]> {
@@ -36,6 +36,16 @@ export class UserService {
 
     if (model) return UserMapper.toDomain(model);
     else return null;
+  }
+
+  public async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const model = await this.dbService.user.update({
+      where: { id },
+      data: updateUserDto,
+      include: this.includes,
+    });
+
+    return UserMapper.toDomain(model);
   }
 
   public async remove(id: number): Promise<{ deleted: boolean }> {

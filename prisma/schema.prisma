@@ -95,6 +95,18 @@ model User {
   location  String
   createdAt DateTime @default(now()) @map("created_at")
   pets      Pet[]
+  devices   UserDevice[]
 
   @@map("users")
+}
+
+model UserDevice {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  token     String
+  platform  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("user_devices")
 }

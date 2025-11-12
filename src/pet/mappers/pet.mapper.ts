@@ -1,4 +1,6 @@
-import UserMapper from 'src/user/mappers/user.mapper';
+import UserMapper, {
+  PrismaUserWithRelations,
+} from 'src/user/mappers/user.mapper';
 import {
   Pet as PrismaPet,
   PetType as PrismaPetType,
@@ -6,7 +8,6 @@ import {
   PetSize as PrismaPetSize,
   PetColor as PrismaPetColor,
   PetSex as PrismaPetSex,
-  User as PrismaUser,
 } from '../../../generated/prisma';
 import { Pet } from '../entities/pet.entity';
 import PetBreedMapper from './pet-breed.mapper';
@@ -21,7 +22,7 @@ type PrismaPetWithRelations = PrismaPet & {
   size: PrismaPetSize;
   color: PrismaPetColor;
   sex: PrismaPetSex;
-  user: PrismaUser;
+  user: PrismaUserWithRelations;
 };
 
 export default class PetMapper {

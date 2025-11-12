@@ -1,3 +1,5 @@
+import { UserDevice } from './user-device.entity';
+
 export class User {
   constructor(
     private readonly id: number,
@@ -6,5 +8,6 @@ export class User {
     private readonly password: string,
     private readonly location: string,
     private readonly createdAt: Date,
+    private readonly devices: UserDevice[],
   ) {}
 }

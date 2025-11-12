@@ -12,7 +12,9 @@ export class PetService {
     size: true,
     sex: true,
     color: true,
-    user: true,
+    user: {
+      include: { devices: true },
+    },
   };
 
   constructor(private readonly dbService: DatabaseService) {}

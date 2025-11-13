@@ -110,3 +110,11 @@ model UserDevice {
 
   @@map("user_devices")
 }
+
+model ReportType {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("report_types")
+}

@@ -118,3 +118,26 @@ model ReportType {
 
   @@map("report_types")
 }
+
+model Report {
+  id          Int        @id @default(autoincrement())
+
+  petId       Int        @map("pet_id")
+  pet         Pet        @relation(fields: [petId], references: [id])
+
+  reportTypeId Int       @map("report_type_id")
+  reportType  ReportType @relation(fields: [reportTypeId], references: [id])
+
+  description String
+  photoUrl    String? @map("photo_url")
+  // TODO ver como guardo location tanto aca como en el user para hacer las query
+  resolved    Boolean    @default(false)
+
+  reportedById Int @map("user_id")
+  reportedBy User @relation(fields: [reportedById], references: [id])
+
+  reportedAt   DateTime   @default(now()) @map("created_at")
+  resolvedAt   DateTime?  @map("resolved_at")
+
+  @@map("reports")
+}

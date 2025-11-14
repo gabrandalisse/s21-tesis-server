@@ -130,7 +130,8 @@ model Report {
 
   description String
   photoUrl    String? @map("photo_url")
-  // TODO ver como guardo location tanto aca como en el user para hacer las query
+  lat Float
+  long Float
   resolved    Boolean    @default(false)
 
   reportedById Int @map("user_id")
@@ -138,6 +139,7 @@ model Report {
 
   reportedAt   DateTime   @default(now()) @map("created_at")
   resolvedAt   DateTime?  @map("resolved_at")
+  @@map("reports")}
 
-  @@map("reports")
-}
+
+// TODO modificar user model para usar lat long

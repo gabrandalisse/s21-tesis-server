@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ReportService } from './report.service';
-import { CreateReportDto } from './dto/create-report.dto';
-import { UpdateReportDto } from './dto/update-report.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { CreateReportDto } from '../dto/create-report.dto';
+import { UpdateReportDto } from '../dto/update-report.dto';
+import { ReportService } from '../services/report.service';
 
 @Controller('report')
 export class ReportController {

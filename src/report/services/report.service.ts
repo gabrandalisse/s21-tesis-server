@@ -20,7 +20,7 @@ export class ReportService {
     return ReportMapper.toDomain(report);
   }
 
-  public async findAll(lat: number, long: number) {
+  public async findAll(userLat: number, userLong: number) {
     const dbResult = await this.dbService.report.findMany({
       include: REPORT_FULL_RELATIONS,
     });
@@ -29,8 +29,8 @@ export class ReportService {
 
     return reports.filter((report) => {
       const distanceKm = DistanceUtils.haversineDistance(
-        lat,
-        long,
+        userLat,
+        userLong,
         report.lat,
         report.long,
       );

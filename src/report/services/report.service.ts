@@ -4,6 +4,8 @@ import { UpdateReportDto } from '../dto/update-report.dto';
 import { DatabaseService } from 'src/database/database.service';
 import ReportMapper from '../mappers/report.mapper';
 import { REPORT_FULL_RELATIONS } from 'src/constants/includes.constants';
+import DistanceUtils from 'src/utils/distance.utils';
+import { REPORT_MAX_DISTANCE_KM } from 'src/constants/distance.constants';
 
 @Injectable()
 export class ReportService {
@@ -18,12 +20,23 @@ export class ReportService {
     return ReportMapper.toDomain(report);
   }
 
-  public async findAll() {
-    const reports = await this.dbService.report.findMany({
+  public async findAll(lat: number, long: number) {
+    const dbResult = await this.dbService.report.findMany({
       include: REPORT_FULL_RELATIONS,
     });
 
-    return ReportMapper.toDomainArray(reports);
+    const reports = ReportMapper.toDomainArray(dbResult);
+
+    return reports.filter((report) => {
+      const distanceKm = DistanceUtils.haversineDistance(
+        lat,
+        long,
+        report.lat,
+        report.long,
+      );
+
+      return distanceKm <= REPORT_MAX_DISTANCE_KM;
+    });
   }
 
   public async findOne(id: number) {

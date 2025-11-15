@@ -4,17 +4,16 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import UserMapper from '../mappers/user.mapper';
 import { User } from '../entities/user.entity';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { USER_WITH_DEVICES } from 'src/constants/includes.constants';
 
 @Injectable()
 export class UserService {
-  private readonly includes = { devices: true };
-
   constructor(private readonly dbService: DatabaseService) {}
 
   public async create(createUserDto: CreateUserDto): Promise<User> {
     const model = await this.dbService.user.create({
       data: createUserDto,
-      include: this.includes,
+      include: USER_WITH_DEVICES,
     });
 
     return UserMapper.toDomain(model);
@@ -22,7 +21,7 @@ export class UserService {
 
   public async findAll(): Promise<User[]> {
     const models = await this.dbService.user.findMany({
-      include: this.includes,
+      include: USER_WITH_DEVICES,
     });
 
     return UserMapper.toDomainArray(models);
@@ -31,7 +30,7 @@ export class UserService {
   public async findOne(id: number): Promise<User | null> {
     const model = await this.dbService.user.findUnique({
       where: { id },
-      include: this.includes,
+      include: USER_WITH_DEVICES,
     });
 
     if (model) return UserMapper.toDomain(model);
@@ -42,7 +41,7 @@ export class UserService {
     const model = await this.dbService.user.update({
       where: { id },
       data: updateUserDto,
-      include: this.includes,
+      include: USER_WITH_DEVICES,
     });
 
     return UserMapper.toDomain(model);

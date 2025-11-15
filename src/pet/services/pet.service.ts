@@ -3,20 +3,10 @@ import { CreatePetDto } from '../dto/create-pet.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Pet } from '../entities/pet.entity';
 import PetMapper from '../mappers/pet.mapper';
+import { PET_FULL_RELATIONS } from 'src/constants/includes.constants';
 
 @Injectable()
 export class PetService {
-  private readonly include = {
-    type: true,
-    breed: true,
-    size: true,
-    sex: true,
-    color: true,
-    user: {
-      include: { devices: true },
-    },
-  };
-
   constructor(private readonly dbService: DatabaseService) {}
 
   public async create(createPetDto: CreatePetDto): Promise<Pet> {
@@ -32,7 +22,7 @@ export class PetService {
 
   public async findAll(): Promise<Pet[]> {
     const results = await this.dbService.pet.findMany({
-      include: this.include,
+      include: PET_FULL_RELATIONS,
     });
 
     return PetMapper.toDomainArray(results);
@@ -41,7 +31,7 @@ export class PetService {
   public async findOne(id: number): Promise<Pet | null> {
     const result = await this.dbService.pet.findUnique({
       where: { id },
-      include: this.include,
+      include: PET_FULL_RELATIONS,
     });
 
     if (!result) return null;

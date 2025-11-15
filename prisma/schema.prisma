@@ -69,8 +69,8 @@ model Pet {
 
   createdAt DateTime @default(now()) @map("created_at")
 
-  userId Int     @map("user_id")
-  user   User    @relation(fields: [userId], references: [id])
+  userId Int  @map("user_id")
+  user   User @relation(fields: [userId], references: [id])
 
   typeId Int     @map("type_id")
   type   PetType @relation(fields: [typeId], references: [id])
@@ -83,19 +83,22 @@ model Pet {
 
   photoUrl                   String
   distinctiveCharacteristics String?
+  reports                    Report[]
 
   @@map("pets")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int          @id @default(autoincrement())
+  email     String       @unique
   name      String
   password  String
-  location  String
-  createdAt DateTime @default(now()) @map("created_at")
+  lat       Float
+  long      Float
+  createdAt DateTime     @default(now()) @map("created_at")
   pets      Pet[]
   devices   UserDevice[]
+  reports   Report[]
 
   @@map("users")
 }
@@ -115,31 +118,31 @@ model ReportType {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   createdAt DateTime @default(now()) @map("created_at")
+  reports   Report[]
 
   @@map("report_types")
 }
 
 model Report {
-  id          Int        @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  petId       Int        @map("pet_id")
-  pet         Pet        @relation(fields: [petId], references: [id])
+  petId Int @map("pet_id")
+  pet   Pet @relation(fields: [petId], references: [id])
 
-  reportTypeId Int       @map("report_type_id")
-  reportType  ReportType @relation(fields: [reportTypeId], references: [id])
+  reportTypeId Int        @map("report_type_id")
+  reportType   ReportType @relation(fields: [reportTypeId], references: [id])
 
   description String
   photoUrl    String? @map("photo_url")
-  lat Float
-  long Float
-  resolved    Boolean    @default(false)
+  lat         Float
+  long        Float
+  resolved    Boolean @default(false)
 
-  reportedById Int @map("user_id")
-  reportedBy User @relation(fields: [reportedById], references: [id])
+  reportedById Int  @map("user_id")
+  reportedBy   User @relation(fields: [reportedById], references: [id])
 
-  reportedAt   DateTime   @default(now()) @map("created_at")
-  resolvedAt   DateTime?  @map("resolved_at")
-  @@map("reports")}
+  reportedAt DateTime  @default(now()) @map("created_at")
+  resolvedAt DateTime? @map("resolved_at")
 
-
-// TODO modificar user model para usar lat long
+  @@map("reports")
+}

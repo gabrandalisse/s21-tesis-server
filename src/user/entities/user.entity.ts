@@ -6,7 +6,8 @@ export class User {
     private readonly email: string,
     private readonly name: string,
     private readonly password: string,
-    private readonly location: string,
+    private readonly lat: number,
+    private readonly long: number,
     private readonly createdAt: Date,
     private readonly devices: UserDevice[],
   ) {}

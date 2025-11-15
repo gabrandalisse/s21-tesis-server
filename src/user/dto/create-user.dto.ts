@@ -1,4 +1,5 @@
-import { IsEmail, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsEmail, IsNumber, IsPositive, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsEmail()
@@ -10,6 +11,13 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
-  @IsString()
-  location: string;
+  @IsNumber()
+  @IsPositive()
+  @Transform(({ value }) => parseFloat(value))
+  lat: number;
+
+  @IsNumber()
+  @IsPositive()
+  @Transform(({ value }) => parseFloat(value))
+  long: number;
 }

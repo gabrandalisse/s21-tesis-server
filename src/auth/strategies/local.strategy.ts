@@ -10,16 +10,16 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({
       usernameField: 'email',
       passwordField: 'password',
-      // TODO agregar esto para pasar lat y long
-      // passReqToCallback: true
+      passReqToCallback: true,
     });
   }
 
   public async validate(
+    req: Request,
     email: string,
     password: string,
   ): Promise<Partial<User>> {
-    const user = await this.authService.validateUser(email, password);
+    const user = await this.authService.validateUser(req, email, password);
 
     if (!user) throw new UnauthorizedException();
 

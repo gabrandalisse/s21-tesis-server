@@ -19,6 +19,7 @@ import type { AuthenticatedRequest } from 'src/auth/interfaces/jwt-payload.inter
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createReportDto: CreateReportDto) {
     return this.reportService.create(createReportDto);
@@ -32,16 +33,19 @@ export class ReportController {
     return this.reportService.findAll(lat, long);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reportService.findOne(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateReportDto: UpdateReportDto) {
     return this.reportService.update(+id, updateReportDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.reportService.remove(+id);

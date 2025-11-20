@@ -27,9 +27,19 @@ export class UserService {
     return UserMapper.toDomainArray(models);
   }
 
-  public async findOne(id: number): Promise<User | null> {
+  public async findOneById(id: number): Promise<User | null> {
     const model = await this.dbService.user.findUnique({
       where: { id },
+      include: USER_WITH_DEVICES,
+    });
+
+    if (model) return UserMapper.toDomain(model);
+    else return null;
+  }
+
+  public async findOneByEmail(email: string): Promise<User | null> {
+    const model = await this.dbService.user.findUnique({
+      where: { email },
       include: USER_WITH_DEVICES,
     });
 

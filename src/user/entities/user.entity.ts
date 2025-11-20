@@ -11,4 +11,16 @@ export class User {
     private readonly createdAt: Date,
     private readonly devices: UserDevice[],
   ) {}
+
+  getId(): number {
+    return this.id;
+  }
+
+  getEmail(): string {
+    return this.email;
+  }
+
+  getPassword(): string {
+    return this.password;
+  }
 }

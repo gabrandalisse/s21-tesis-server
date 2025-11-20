@@ -14,7 +14,8 @@ export default class UserMapper {
       prismaUser.email,
       prismaUser.name,
       prismaUser.password,
-      prismaUser.location,
+      prismaUser.lat,
+      prismaUser.long,
       prismaUser.createdAt,
       UserDeviceMapper.toDomainArray(prismaUser.devices),
     );

@@ -9,5 +9,6 @@ import { UserDeviceController } from './controllers/user-device.controller';
   controllers: [UserController, UserDeviceController],
   providers: [UserService, UserDeviceService],
   imports: [DatabaseModule],
+  exports: [UserService],
 })
 export class UserModule {}

@@ -22,7 +22,7 @@ export class ReportController {
 
   @Get()
   findAll() {
-    return this.reportService.findAll();
+    return this.reportService.findAll(1, 1); // Default coordinates for example
   }
 
   @Get(':id')

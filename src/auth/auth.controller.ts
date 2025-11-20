@@ -22,7 +22,7 @@ export class AuthController {
     return req.logout();
   }
 
-  // TODO eliminar
+  // TODO delete
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {

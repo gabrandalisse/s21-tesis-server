@@ -23,4 +23,12 @@ export class User {
   getPassword(): string {
     return this.password;
   }
+
+  getLat(): number {
+    return this.lat;
+  }
+
+  getLong(): number {
+    return this.long;
+  }
 }

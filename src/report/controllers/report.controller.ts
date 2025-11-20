@@ -6,10 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { UpdateReportDto } from '../dto/update-report.dto';
 import { ReportService } from '../services/report.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import type { AuthenticatedRequest } from 'src/auth/interfaces/jwt-payload.interface';
 
 @Controller('report')
 export class ReportController {
@@ -20,9 +24,12 @@ export class ReportController {
     return this.reportService.create(createReportDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.reportService.findAll(1, 1); // Default coordinates for example
+  findAll(@Request() req: AuthenticatedRequest) {
+    // TODO validate if this works as expected
+    const { lat, long } = req.user;
+    return this.reportService.findAll(lat, long);
   }
 
   @Get(':id')

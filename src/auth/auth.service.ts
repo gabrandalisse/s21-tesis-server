@@ -32,6 +32,8 @@ export class AuthService {
     const payload: Partial<JwtPayload> = {
       email: user.getEmail(),
       id: user.getId(),
+      lat: user.getLat(),
+      long: user.getLong(),
     };
 
     return {

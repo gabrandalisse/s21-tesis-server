@@ -16,7 +16,7 @@ export class CreateReportDto {
   description: string;
 
   @IsString()
-  photourl: string;
+  photoUrl: string;
 
   @IsNumber()
   lat: number;

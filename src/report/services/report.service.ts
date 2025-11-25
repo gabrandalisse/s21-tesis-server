@@ -6,18 +6,30 @@ import ReportMapper from '../mappers/report.mapper';
 import { REPORT_FULL_RELATIONS } from 'src/constants/includes.constants';
 import DistanceUtils from 'src/utils/distance.utils';
 import { REPORT_MAX_DISTANCE_KM } from 'src/constants/distance.constants';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { REPORT_QUEUE_NAME } from 'src/constants/queue.constants';
 
 @Injectable()
 export class ReportService {
-  constructor(private readonly dbService: DatabaseService) {}
+  constructor(
+    @InjectQueue(REPORT_QUEUE_NAME) private readonly reportQueue: Queue,
+    private readonly dbService: DatabaseService,
+  ) {}
 
   public async create(createReportDto: CreateReportDto) {
-    const report = await this.dbService.report.create({
+    const result = await this.dbService.report.create({
       data: createReportDto,
       include: REPORT_FULL_RELATIONS,
     });
 
-    return ReportMapper.toDomain(report);
+    const report = ReportMapper.toDomain(result);
+
+    await this.reportQueue.add('match', { report });
+
+    // TODO add a queue for notifications? -> Yes!
+
+    return report;
   }
 
   public async findAll(userLat: number, userLong: number) {

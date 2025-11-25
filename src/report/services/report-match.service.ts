@@ -1,13 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { Report } from '../entities/report.entity';
+import { ReportService } from './report.service';
+import { ReportTypeEnum } from 'src/enums/report.enums';
+import { ReportMatch } from '../entities/report-match.entity';
 
 @Injectable()
 export class ReportMatchService {
-  async test(report: Report) {
-    for (let i = 0; i <= 100; i += 20) {
-      console.log('report', report);
+  constructor(private readonly reportService: ReportService) {}
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
+  async findMatches(lostReport: Report) {
+    const foundReports = await this.reportService.findAllByLatAndLong(
+      lostReport.lat,
+      lostReport.long,
+      { reportType: { name: ReportTypeEnum.FOUND } },
+    );
+
+    return foundReports.map((report) => {
+      return new ReportMatch(
+        1,
+        lostReport,
+        report,
+        Math.random(), // Simulated match score
+        Math.random(),
+        'pending',
+        new Date(),
+      );
+    });
   }
 }

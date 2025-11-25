@@ -144,5 +144,25 @@ model Report {
   reportedAt DateTime  @default(now()) @map("created_at")
   resolvedAt DateTime? @map("resolved_at")
 
+  lostMatches  ReportMatch[] @relation("LostReport")
+  foundMatches ReportMatch[] @relation("FoundReport")
+
   @@map("reports")
+}
+
+model ReportMatch {
+  id Int @id @default(autoincrement())
+
+  lostReportId Int @map("lost_report_id")
+  lostReport   Report @relation("LostReport", fields: [lostReportId], references: [id])
+
+  foundReportId Int @map("found_report_id")
+  foundReport   Report @relation("FoundReport", fields: [foundReportId], references: [id])
+
+  matchScore Float @map("match_score")
+  distanceKilometers Float @map("distance_kilometers")
+  status String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("report_matches")
 }

@@ -28,9 +28,8 @@ export class ReportController {
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@Request() req: AuthenticatedRequest) {
-    // TODO validate if this works as expected
     const { lat, long } = req.user;
-    return this.reportService.findAll(lat, long);
+    return this.reportService.findAllByLatAndLong(lat, long);
   }
 
   @UseGuards(JwtAuthGuard)

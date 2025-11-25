@@ -19,10 +19,10 @@ export class ReportProcessor extends WorkerHost {
     );
 
     try {
+      // TODO PONER IF DEL NAME
       const { report } = job.data;
 
-      // TODO aca if report es de tipo perdido
-      await this.matchService.test(report);
+      await this.matchService.findMatches(report);
 
       // TODO dsp notificar si encontro matches, poner un notificationService
 

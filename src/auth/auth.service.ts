@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/services/user.service';
@@ -6,6 +6,8 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
@@ -35,6 +37,8 @@ export class AuthService {
       lat: user.getLat(),
       long: user.getLong(),
     };
+
+    this.logger.log(`Signing JWT with payload: ${JSON.stringify(payload)}`);
 
     return {
       access_token: this.jwtService.sign(payload),

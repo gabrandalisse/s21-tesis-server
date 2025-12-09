@@ -22,7 +22,13 @@ export class ReportProcessor extends WorkerHost {
       // TODO PONER IF DEL NAME
       const { report } = job.data;
 
-      await this.matchService.findMatches(report);
+      const matches = await this.matchService.findMatches(report);
+
+      this.logger.log(
+        `${matches.length} matches found for report id ${report.id}`,
+      );
+
+      // TODO actualizar lost report con los matches
 
       // TODO dsp notificar si encontro matches, poner un notificationService
 

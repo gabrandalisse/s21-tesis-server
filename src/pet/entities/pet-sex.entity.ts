@@ -1,7 +1,7 @@
 export class PetSex {
   constructor(
     private readonly id: number,
-    private readonly name: string,
+    public readonly name: string,
     private readonly createdAt: Date,
   ) {}
 }

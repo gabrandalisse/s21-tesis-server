@@ -16,6 +16,7 @@ import { Report } from '../entities/report.entity';
 import PetMapper from 'src/pet/mappers/pet.mapper';
 import ReportTypeMapper from './report-type.mapper';
 import UserMapper from 'src/user/mappers/user.mapper';
+import ReportMapper from './report.mapper';
 
 type PrismaReportBase = PrismaReport & {
   pet: PrismaPet & {
@@ -36,6 +37,11 @@ type PrismaLostMatchWithRelations = PrismaReportMatch & {
 
 type PrismaFoundMatchWithRelations = PrismaReportMatch & {
   lostReport: PrismaReportBase;
+};
+
+type PrismaFoundAndLostMatchWithRelations = PrismaReportMatch & {
+  lostReport: PrismaReportBase;
+  foundReport: PrismaReportBase;
 };
 
 export default class ReportMatchMapper {
@@ -84,6 +90,20 @@ export default class ReportMatchMapper {
   ): ReportMatch[] {
     return prismaReportMatches.map((rm) =>
       this.toDomainFromFoundMatch(rm, currentReport),
+    );
+  }
+
+  public static toDomain(
+    prismaReportMatch: PrismaFoundAndLostMatchWithRelations,
+  ) {
+    return new ReportMatch(
+      prismaReportMatch.id,
+      ReportMapper.toDomain(prismaReportMatch.lostReport),
+      ReportMapper.toDomain(prismaReportMatch.foundReport),
+      prismaReportMatch.matchScore,
+      prismaReportMatch.distanceKilometers,
+      prismaReportMatch.status,
+      prismaReportMatch.createdAt,
     );
   }
 

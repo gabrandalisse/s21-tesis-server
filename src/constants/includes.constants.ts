@@ -15,7 +15,7 @@ export const USER_WITH_DEVICES = {
   devices: true,
 };
 
-const REPORT_BASE_RELATIONS = {
+export const REPORT_BASE_RELATIONS = {
   pet: {
     include: PET_FULL_RELATIONS,
   },

@@ -1,7 +1,7 @@
 export class PetBreed {
   constructor(
     private readonly id: number,
-    private readonly name: string,
+    public readonly name: string,
     private readonly typeId: number,
     private readonly createdAt: Date,
   ) {}

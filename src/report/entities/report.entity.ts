@@ -5,13 +5,13 @@ import { ReportMatch } from './report-match.entity';
 
 export class Report {
   constructor(
-    private readonly id: number,
-    private readonly pet: Pet,
-    private readonly _type: ReportType,
+    public readonly id: number,
+    public readonly pet: Pet,
+    public readonly type: ReportType,
     private readonly description: string,
     private readonly photoUrl: string | null,
-    private readonly _lat: number,
-    private readonly _long: number,
+    public readonly lat: number,
+    public readonly long: number,
     private readonly resolved: boolean,
     private readonly reportedBy: User,
     private readonly reportedAt: Date,
@@ -19,16 +19,4 @@ export class Report {
     private readonly lostMatches: ReportMatch[],
     private readonly foundMatches: ReportMatch[],
   ) {}
-
-  get lat(): number {
-    return this._lat;
-  }
-
-  get long(): number {
-    return this._long;
-  }
-
-  get type(): ReportType {
-    return this._type;
-  }
 }

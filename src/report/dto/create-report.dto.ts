@@ -28,4 +28,6 @@ export class CreateReportDto {
   @IsPositive()
   @Transform(({ value }) => Number(value))
   reportedById: number;
+
+  foundMatchesId: number[];
 }

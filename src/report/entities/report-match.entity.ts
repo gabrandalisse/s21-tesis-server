@@ -2,7 +2,7 @@ import { Report } from './report.entity';
 
 export class ReportMatch {
   constructor(
-    private readonly id: number,
+    public readonly id: number,
     private readonly lostReport: Report,
     private readonly foundReport: Report,
     private readonly matchScore: number,

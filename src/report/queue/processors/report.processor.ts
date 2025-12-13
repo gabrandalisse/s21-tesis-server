@@ -4,12 +4,16 @@ import { Job } from 'bullmq';
 import { REPORT_QUEUE_NAME } from 'src/constants/queue.constants';
 import { Report } from 'src/report/entities/report.entity';
 import { ReportMatchService } from 'src/report/services/report-match.service';
+import { ReportService } from 'src/report/services/report.service';
 
 @Processor(REPORT_QUEUE_NAME)
 export class ReportProcessor extends WorkerHost {
   private readonly logger = new Logger(ReportProcessor.name);
 
-  constructor(private readonly matchService: ReportMatchService) {
+  constructor(
+    private readonly matchService: ReportMatchService,
+    private readonly reportService: ReportService,
+  ) {
     super();
   }
 
@@ -19,18 +23,25 @@ export class ReportProcessor extends WorkerHost {
     );
 
     try {
-      // TODO PONER IF DEL NAME
       const { report } = job.data;
 
       const matches = await this.matchService.findMatches(report);
+
+      if (!matches || matches.length === 0) {
+        this.logger.log(`no matches found for report id ${report.id}`);
+        return;
+      }
 
       this.logger.log(
         `${matches.length} matches found for report id ${report.id}`,
       );
 
-      // TODO actualizar lost report con los matches
+      // TODO probar
+      await this.reportService.update(report.id, {
+        foundMatchesId: matches.map((match) => match.id),
+      });
 
-      // TODO dsp notificar si encontro matches, poner un notificationService
+      // TODO Notify user
 
       this.logger.log(`Report job with id: ${job.id} has been completed.`);
     } catch (error: unknown) {

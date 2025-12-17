@@ -3,7 +3,7 @@ import { CreateReportDto } from '../dto/create-report.dto';
 import { UpdateReportDto } from '../dto/update-report.dto';
 import { DatabaseService } from 'src/database/database.service';
 import ReportMapper from '../mappers/report.mapper';
-import { REPORT_FULL_RELATIONS } from 'src/constants/includes.constants';
+import { REPORT_BASE_RELATIONS } from 'src/constants/includes.constants';
 import DistanceUtils from 'src/utils/distance.utils';
 import { REPORT_MAX_DISTANCE_KM } from 'src/constants/distance.constants';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -26,13 +26,13 @@ export class ReportService {
   public async create(createReportDto: CreateReportDto) {
     const result = await this.dbService.report.create({
       data: createReportDto,
-      include: REPORT_FULL_RELATIONS,
+      include: REPORT_BASE_RELATIONS,
     });
 
     const report = ReportMapper.toDomain(result);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-    if (report.type.name.toLowerCase() === ReportTypeEnum.LOST)
+    if (report.getType().toLowerCase() === ReportTypeEnum.LOST)
       await this.reportQueue.add(REPORT_CREATED_JOB_NAME, { report });
 
     // TODO add a queue for notifications? -> Yes!
@@ -48,7 +48,7 @@ export class ReportService {
     this.logger.log(`Finding reports near lat: ${lat}, long: ${long}`);
 
     const dbResult = await this.dbService.report.findMany({
-      include: REPORT_FULL_RELATIONS,
+      include: REPORT_BASE_RELATIONS,
       where: { resolved: false, ...options },
     });
 
@@ -60,8 +60,8 @@ export class ReportService {
       const distanceKm = DistanceUtils.haversineDistance(
         lat,
         long,
-        report.lat,
-        report.long,
+        report.getLat(),
+        report.getLong(),
       );
 
       return distanceKm <= REPORT_MAX_DISTANCE_KM;
@@ -77,7 +77,7 @@ export class ReportService {
   public async findOne(id: number) {
     const report = await this.dbService.report.findUnique({
       where: { id },
-      include: REPORT_FULL_RELATIONS,
+      include: REPORT_BASE_RELATIONS,
     });
 
     if (!report) return null;
@@ -88,7 +88,7 @@ export class ReportService {
     const report = await this.dbService.report.update({
       where: { id },
       data: updateReportDto,
-      include: REPORT_FULL_RELATIONS,
+      include: REPORT_BASE_RELATIONS,
     });
 
     return ReportMapper.toDomain(report);

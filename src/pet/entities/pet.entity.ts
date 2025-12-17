@@ -1,24 +1,45 @@
 import { User } from 'src/user/entities/user.entity';
-import { PetType } from './pet-type.entity';
-import { PetBreed } from './pet-breed.entity';
-import { PetColor } from './pet-color.entity';
-import { PetSize } from './pet-size.entity';
-import { PetSex } from './pet-sex.entity';
 
 export class Pet {
   constructor(
     private readonly id: number,
-    private readonly user: User,
+    private readonly owner: User,
     private readonly name: string,
-    public readonly type: PetType,
-    public readonly breed: PetBreed,
-    public readonly color: PetColor,
-    public readonly size: PetSize,
-    public readonly sex: PetSex,
+    private readonly type: string,
+    private readonly breed: string,
+    private readonly color: string,
+    private readonly size: string,
+    private readonly sex: string,
     private readonly age: number,
     private readonly photoUrl: string,
     private readonly distinctiveCharacteristics: string | undefined,
     private readonly createdAt: Date,
     private readonly reports: any[],
   ) {}
+
+  public getType(): string {
+    return this.type;
+  }
+
+  public getBreed(): string {
+    return this.breed;
+  }
+
+  public getColor(): string {
+    return this.color;
+  }
+
+  public getSize(): string {
+    return this.size;
+  }
+
+  public getSex(): string {
+    return this.sex;
+  }
+
+  public toJSON() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { reports, ...rest } = this;
+    return rest;
+  }
 }

@@ -1,22 +1,40 @@
 import { Pet } from 'src/pet/entities/pet.entity';
-import { ReportType } from './report-type.entity';
 import { User } from 'src/user/entities/user.entity';
 import { ReportMatch } from './report-match.entity';
 
 export class Report {
   constructor(
-    public readonly id: number,
-    public readonly pet: Pet,
-    public readonly type: ReportType,
+    private readonly id: number,
+    private readonly pet: Pet,
+    private readonly type: string,
     private readonly description: string,
     private readonly photoUrl: string | null,
-    public readonly lat: number,
-    public readonly long: number,
+    private readonly lat: number,
+    private readonly long: number,
     private readonly resolved: boolean,
     private readonly reportedBy: User,
     private readonly reportedAt: Date,
     private readonly resolvedAt: Date | null,
-    private readonly lostMatches: ReportMatch[],
-    private readonly foundMatches: ReportMatch[],
+    private readonly matches: ReportMatch[],
   ) {}
+
+  public getId(): number {
+    return this.id;
+  }
+
+  public getPet(): Pet {
+    return this.pet;
+  }
+
+  public getType(): string {
+    return this.type;
+  }
+
+  public getLat(): number {
+    return this.lat;
+  }
+
+  public getLong(): number {
+    return this.long;
+  }
 }

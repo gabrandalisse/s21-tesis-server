@@ -22,20 +22,20 @@ type PrismaPetWithRelations = PrismaPet & {
   size: PrismaPetSize;
   color: PrismaPetColor;
   sex: PrismaPetSex;
-  user: PrismaUserWithRelations;
+  owner: PrismaUserWithRelations;
 };
 
 export default class PetMapper {
   static toDomain(prismaPet: PrismaPetWithRelations): Pet {
     return new Pet(
       prismaPet.id,
-      UserMapper.toDomain(prismaPet.user),
+      UserMapper.toDomain(prismaPet.owner),
       prismaPet.name,
-      PetTypeMapper.toDomain(prismaPet.type),
-      PetBreedMapper.toDomain(prismaPet.breed),
-      PetColorMapper.toDomain(prismaPet.color),
-      PetSizeMapper.toDomain(prismaPet.size),
-      PetSexMapper.toDomain(prismaPet.sex),
+      PetTypeMapper.toDomain(prismaPet.type).getName(),
+      PetBreedMapper.toDomain(prismaPet.breed).getName(),
+      PetColorMapper.toDomain(prismaPet.color).getName(),
+      PetSizeMapper.toDomain(prismaPet.size).getName(),
+      PetSexMapper.toDomain(prismaPet.sex).getName(),
       prismaPet.age,
       prismaPet.photoUrl,
       prismaPet.distinctiveCharacteristics ?? undefined,

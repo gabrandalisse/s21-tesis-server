@@ -7,7 +7,7 @@ export default class PetTypeMapper {
       prismaPetType.id,
       prismaPetType.name,
       prismaPetType.createdAt,
-      undefined, // breeds_id - can be populated if needed
+      undefined,
     );
   }
 

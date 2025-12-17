@@ -70,7 +70,7 @@ model Pet {
   createdAt DateTime @default(now()) @map("created_at")
 
   userId Int  @map("user_id")
-  user   User @relation(fields: [userId], references: [id])
+  owner   User @relation(fields: [userId], references: [id])
 
   typeId Int     @map("type_id")
   type   PetType @relation(fields: [typeId], references: [id])
@@ -144,8 +144,7 @@ model Report {
   reportedAt DateTime  @default(now()) @map("created_at")
   resolvedAt DateTime? @map("resolved_at")
 
-  lostMatches  ReportMatch[] @relation("LostReport")
-  foundMatches ReportMatch[] @relation("FoundReport")
+  matches ReportMatch[]
 
   @@map("reports")
 }
@@ -153,11 +152,8 @@ model Report {
 model ReportMatch {
   id Int @id @default(autoincrement())
 
-  lostReportId Int @map("lost_report_id")
-  lostReport   Report @relation("LostReport", fields: [lostReportId], references: [id])
-
   foundReportId Int @map("found_report_id")
-  foundReport   Report @relation("FoundReport", fields: [foundReportId], references: [id])
+  foundReport   Report @relation(fields: [foundReportId], references: [id])
 
   matchScore Float @map("match_score")
   distanceKilometers Float @map("distance_kilometers")
@@ -166,3 +162,5 @@ model ReportMatch {
 
   @@map("report_matches")
 }
+
+

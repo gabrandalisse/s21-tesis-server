@@ -1,7 +1,11 @@
 export class PetColor {
   constructor(
     private readonly id: number,
-    public readonly name: string,
+    private readonly name: string,
     private readonly createdAt: Date,
   ) {}
+
+  public getName(): string {
+    return this.name;
+  }
 }

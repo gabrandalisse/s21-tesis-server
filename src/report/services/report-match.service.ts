@@ -5,9 +5,9 @@ import { ReportTypeEnum } from 'src/enums/report.enums';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateReportMatchDto } from '../dto/create-report-match.dto';
 import DistanceUtils from 'src/utils/distance.utils';
-import { REPORT_BASE_RELATIONS } from 'src/constants/includes.constants';
-import ReportMatchMapper from '../mappers/report-match.mapper';
+// import ReportMatchMapper from '../mappers/report-match.mapper';
 import { ReportMatch } from '../entities/report-match.entity';
+import { Pet } from 'src/pet/entities/pet.entity';
 
 @Injectable()
 export class ReportMatchService {
@@ -23,26 +23,25 @@ export class ReportMatchService {
   ): Promise<ReportMatch> {
     const result = await this.dbService.reportMatch.create({
       data: createReportMatchDto,
-      include: {
-        lostReport: { include: REPORT_BASE_RELATIONS },
-        foundReport: { include: REPORT_BASE_RELATIONS },
-      },
     });
 
-    const match = ReportMatchMapper.toDomain(result);
-    this.logger.log(`match created ${JSON.stringify(match)}`);
+    // const match = ReportMatchMapper.toDomain(result);
+    // this.logger.log(`match created ${JSON.stringify(match)}`);
 
-    return match;
+    console.log('\nRESULT', JSON.stringify(result), '\n');
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return result as any;
   }
 
   public async findMatches(lostReport: Report): Promise<ReportMatch[]> {
     this.logger.log(
-      `finding matches for lost report with id: ${lostReport.id}`,
+      `finding matches for lost report with id: ${lostReport.getId()}`,
     );
 
     const foundReports = await this.getFoundReports(
-      lostReport.lat,
-      lostReport.long,
+      lostReport.getLat(),
+      lostReport.getLong(),
     );
 
     const matches = await this.getReportMatches(foundReports, lostReport);
@@ -73,30 +72,24 @@ export class ReportMatchService {
     const matches: ReportMatch[] = [];
 
     for (const found of founds) {
-      let score = 0;
+      this.logger.log(`found pet ${JSON.stringify(found.getPet())}`);
+      this.logger.log(`lost pet ${JSON.stringify(lost.getPet())}`);
 
-      this.logger.log(`found pet ${JSON.stringify(found.pet)}`);
-      this.logger.log(`lost pet ${JSON.stringify(lost.pet)}`);
+      const score = this.calculateMatchScore(lost.getPet(), found.getPet());
 
-      if (found.pet.breed.name === lost.pet.breed.name) score += 0.3;
-      if (found.pet.sex.name === lost.pet.sex.name) score += 0.3;
-      if (found.pet.type.name === lost.pet.type.name) score += 0.2;
-      if (found.pet.color.name === lost.pet.color.name) score += 0.1;
-      if (found.pet.size.name === lost.pet.size.name) score += 0.1;
-
-      this.logger.log(`score for found report id ${found.id} is ${score}`);
+      this.logger.log(`score for found report id ${found.getId()} is ${score}`);
 
       if (score >= 0.5) {
         const distanceKilometers = DistanceUtils.haversineDistance(
-          found.lat,
-          found.long,
-          lost.lat,
-          lost.long,
+          found.getLat(),
+          found.getLong(),
+          lost.getLat(),
+          lost.getLong(),
         );
 
         const match = await this.create({
-          lostReportId: lost.id,
-          foundReportId: found.id,
+          lostReportId: lost.getId(),
+          foundReportId: found.getId(),
           matchScore: score,
           distanceKilometers,
           // TODO agregar a constant
@@ -108,5 +101,17 @@ export class ReportMatchService {
     }
 
     return matches;
+  }
+
+  private calculateMatchScore(lost: Pet, found: Pet): number {
+    let score = 0;
+
+    if (found.getBreed() === lost.getBreed()) score += 0.3;
+    if (found.getSex() === lost.getSex()) score += 0.3;
+    if (found.getType() === lost.getType()) score += 0.2;
+    if (found.getColor() === lost.getColor()) score += 0.1;
+    if (found.getSize() === lost.getSize()) score += 0.1;
+
+    return score;
   }
 }

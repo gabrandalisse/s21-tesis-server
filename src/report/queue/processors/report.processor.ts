@@ -28,20 +28,26 @@ export class ReportProcessor extends WorkerHost {
       const matches = await this.matchService.findMatches(report);
 
       if (!matches || matches.length === 0) {
-        this.logger.log(`no matches found for report id ${report.id}`);
+        this.logger.log(`no matches found for report id ${report.getId()}`);
         return;
       }
 
       this.logger.log(
-        `${matches.length} matches found for report id ${report.id}`,
+        `${matches.length} matches found for report id ${report.getId()}`,
       );
 
-      // TODO probar
-      await this.reportService.update(report.id, {
-        foundMatchesId: matches.map((match) => match.id),
+      const foundReportId = matches.map((m) => ({ id: m.id }));
+      await this.reportService.update(report.getId(), {
+        foundMatches: {
+          connect: foundReportId,
+        },
       });
 
-      // TODO Notify user
+      this.logger.log(
+        `report id ${report.getId()} updated with matches ${JSON.stringify(foundReportId)}`,
+      );
+
+      // TODO notify user
 
       this.logger.log(`Report job with id: ${job.id} has been completed.`);
     } catch (error: unknown) {

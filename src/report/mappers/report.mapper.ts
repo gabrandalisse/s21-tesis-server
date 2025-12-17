@@ -24,58 +24,19 @@ type PrismaReportBase = PrismaReport & {
     size: PrismaPetSize;
     color: PrismaPetColor;
     sex: PrismaPetSex;
-    user: PrismaUser & { devices: PrismaUserDevice[] };
+    owner: PrismaUser & { devices: PrismaUserDevice[] };
   };
   reportType: PrismaReportType;
   reportedBy: PrismaUser & { devices: PrismaUserDevice[] };
-};
-
-type PrismaReportWithRelations = PrismaReportBase & {
-  lostMatches?: (PrismaReportMatch & {
-    foundReport: PrismaReportBase;
-  })[];
-  foundMatches?: (PrismaReportMatch & {
-    lostReport: PrismaReportBase;
-  })[];
+  matches: PrismaReportMatch[];
 };
 
 export default class ReportMapper {
-  static toDomain(prismaReport: PrismaReportWithRelations): Report {
-    // First create the report without matches
-    const report = new Report(
-      prismaReport.id,
-      PetMapper.toDomain(prismaReport.pet),
-      ReportTypeMapper.toDomain(prismaReport.reportType),
-      prismaReport.description,
-      prismaReport.photoUrl,
-      prismaReport.lat,
-      prismaReport.long,
-      prismaReport.resolved,
-      UserMapper.toDomain(prismaReport.reportedBy),
-      prismaReport.reportedAt,
-      prismaReport.resolvedAt,
-      [],
-      [],
-    );
-
-    const lostMatches = prismaReport.lostMatches
-      ? ReportMatchMapper.toDomainArrayFromLostMatches(
-          prismaReport.lostMatches,
-          report,
-        )
-      : [];
-
-    const foundMatches = prismaReport.foundMatches
-      ? ReportMatchMapper.toDomainArrayFromFoundMatches(
-          prismaReport.foundMatches,
-          report,
-        )
-      : [];
-
+  static toDomain(prismaReport: PrismaReportBase): Report {
     return new Report(
       prismaReport.id,
       PetMapper.toDomain(prismaReport.pet),
-      ReportTypeMapper.toDomain(prismaReport.reportType),
+      ReportTypeMapper.toDomain(prismaReport.reportType).getName(),
       prismaReport.description,
       prismaReport.photoUrl,
       prismaReport.lat,
@@ -84,12 +45,11 @@ export default class ReportMapper {
       UserMapper.toDomain(prismaReport.reportedBy),
       prismaReport.reportedAt,
       prismaReport.resolvedAt,
-      lostMatches,
-      foundMatches,
+      ReportMatchMapper.toDomainArray(prismaReport.matches),
     );
   }
 
-  static toDomainArray(prismaReports: PrismaReportWithRelations[]): Report[] {
+  public static toDomainArray(prismaReports: PrismaReportBase[]): Report[] {
     return prismaReports.map((r) => this.toDomain(r));
   }
 }

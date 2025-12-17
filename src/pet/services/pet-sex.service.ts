@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreatePetSexDto } from '../dto/create-pet-sex.dto';
 import { PetSex } from '../entities/pet-sex.entity';
@@ -17,6 +17,10 @@ export class PetSexService {
 
   public async findAll(): Promise<PetSex[]> {
     const results = await this.dbService.petSex.findMany();
+
+    if (!results || results.length === 0)
+      throw new NotFoundException('not pet sex found');
+
     return PetSexMapper.toDomainArray(results);
   }
 

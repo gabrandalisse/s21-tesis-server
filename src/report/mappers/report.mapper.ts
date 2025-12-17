@@ -9,13 +9,11 @@ import {
   PetColor as PrismaPetColor,
   PetSex as PrismaPetSex,
   UserDevice as PrismaUserDevice,
-  ReportMatch as PrismaReportMatch,
 } from '../../../generated/prisma';
 import { Report } from '../entities/report.entity';
 import PetMapper from 'src/pet/mappers/pet.mapper';
 import ReportTypeMapper from './report-type.mapper';
 import UserMapper from 'src/user/mappers/user.mapper';
-import ReportMatchMapper from './report-match.mapper';
 
 type PrismaReportBase = PrismaReport & {
   pet: PrismaPet & {
@@ -28,7 +26,6 @@ type PrismaReportBase = PrismaReport & {
   };
   reportType: PrismaReportType;
   reportedBy: PrismaUser & { devices: PrismaUserDevice[] };
-  matches: PrismaReportMatch[];
 };
 
 export default class ReportMapper {
@@ -45,7 +42,7 @@ export default class ReportMapper {
       UserMapper.toDomain(prismaReport.reportedBy),
       prismaReport.reportedAt,
       prismaReport.resolvedAt,
-      ReportMatchMapper.toDomainArray(prismaReport.matches),
+      [],
     );
   }
 

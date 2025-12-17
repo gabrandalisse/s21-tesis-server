@@ -1,6 +1,7 @@
 export class ReportMatch {
   constructor(
-    public readonly id: number,
+    private readonly id: number,
+    private readonly lostReportId: number,
     private readonly foundReportId: number,
     private readonly matchScore: number,
     private readonly distanceKilometers: number,
@@ -10,7 +11,7 @@ export class ReportMatch {
 
   public toJSON() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { createdAt, ...rest } = this;
+    const { id, createdAt, ...rest } = this;
     return rest;
   }
 }

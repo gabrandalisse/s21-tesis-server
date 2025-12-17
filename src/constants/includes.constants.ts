@@ -23,5 +23,4 @@ export const REPORT_BASE_RELATIONS = {
   reportedBy: {
     include: USER_WITH_DEVICES,
   },
-  matches: true,
 };

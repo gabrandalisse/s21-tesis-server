@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePetSizeDto } from '../dto/create-pet-size.dto';
 import { PetSize } from '../entities/pet-size.entity';
 import { DatabaseService } from 'src/database/database.service';
@@ -17,6 +17,10 @@ export class PetSizeService {
 
   public async findAll(): Promise<PetSize[]> {
     const results = await this.dbService.petSize.findMany();
+
+    if (!results || results.length === 0)
+      throw new NotFoundException('no pet size found');
+
     return PetSizeMapper.toDomainArray(results);
   }
 

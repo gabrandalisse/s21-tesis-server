@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { UpdateReportDto } from '../dto/update-report.dto';
 import { DatabaseService } from 'src/database/database.service';
@@ -13,6 +13,7 @@ import {
   REPORT_QUEUE_NAME,
 } from 'src/constants/queue.constants';
 import { ReportTypeEnum } from 'src/enums/report.enums';
+import { Report } from '../entities/report.entity';
 
 @Injectable()
 export class ReportService {
@@ -74,14 +75,14 @@ export class ReportService {
     return filteredReports;
   }
 
-  public async findOne(id: number) {
+  public async findOne(id: number): Promise<Report> {
     const report = await this.dbService.report.findUnique({
       where: { id },
       include: REPORT_BASE_RELATIONS,
     });
 
-    if (!report) return null;
-    else return ReportMapper.toDomain(report);
+    if (!report) throw new NotFoundException(`no report found for id ${id}`);
+    return ReportMapper.toDomain(report);
   }
 
   public async update(id: number, updateReportDto: UpdateReportDto) {

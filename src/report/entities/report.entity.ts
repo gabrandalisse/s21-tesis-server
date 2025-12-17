@@ -37,4 +37,10 @@ export class Report {
   public getLong(): number {
     return this.long;
   }
+
+  public toJSON() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { matches, ...rest } = this;
+    return rest;
+  }
 }

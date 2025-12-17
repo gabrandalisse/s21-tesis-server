@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePetDto } from '../dto/create-pet.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { Pet } from '../entities/pet.entity';
@@ -25,16 +25,19 @@ export class PetService {
       include: PET_FULL_RELATIONS,
     });
 
+    if (!results || results.length === 0)
+      throw new NotFoundException('not pets found');
+
     return PetMapper.toDomainArray(results);
   }
 
-  public async findOne(id: number): Promise<Pet | null> {
+  public async findOne(id: number): Promise<Pet> {
     const result = await this.dbService.pet.findUnique({
       where: { id },
       include: PET_FULL_RELATIONS,
     });
 
-    if (!result) return null;
+    if (!result) throw new NotFoundException(`no pet found for id ${id}`);
     return PetMapper.toDomain(result);
   }
 

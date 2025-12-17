@@ -1,6 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
+import { plainToClass } from 'class-transformer';
 import { REPORT_QUEUE_NAME } from 'src/constants/queue.constants';
 import { Report } from 'src/report/entities/report.entity';
 import { ReportMatchService } from 'src/report/services/report-match.service';
@@ -23,28 +24,20 @@ export class ReportProcessor extends WorkerHost {
     );
 
     try {
-      const { report } = job.data;
+      const { report: reportPlain } = job.data;
+
+      const report = plainToClass(Report, reportPlain);
+      const reportId = report.getId();
 
       const matches = await this.matchService.findMatches(report);
 
       if (!matches || matches.length === 0) {
-        this.logger.log(`no matches found for report id ${report.getId()}`);
+        this.logger.log(`no matches found for report id ${reportId}`);
         return;
       }
 
       this.logger.log(
-        `${matches.length} matches found for report id ${report.getId()}`,
-      );
-
-      const foundReportId = matches.map((m) => ({ id: m.id }));
-      await this.reportService.update(report.getId(), {
-        foundMatches: {
-          connect: foundReportId,
-        },
-      });
-
-      this.logger.log(
-        `report id ${report.getId()} updated with matches ${JSON.stringify(foundReportId)}`,
+        `${matches.length} matches found for report id ${reportId}`,
       );
 
       // TODO notify user

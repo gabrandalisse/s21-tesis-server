@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import UserMapper from '../mappers/user.mapper';
@@ -24,27 +24,30 @@ export class UserService {
       include: USER_WITH_DEVICES,
     });
 
+    if (!models || models.length === 0)
+      throw new NotFoundException(`no users found`);
+
     return UserMapper.toDomainArray(models);
   }
 
-  public async findOneById(id: number): Promise<User | null> {
+  public async findOneById(id: number): Promise<User> {
     const model = await this.dbService.user.findUnique({
       where: { id },
       include: USER_WITH_DEVICES,
     });
 
-    if (model) return UserMapper.toDomain(model);
-    else return null;
+    if (!model) throw new NotFoundException(`no user found for id ${id}`);
+    return UserMapper.toDomain(model);
   }
 
-  public async findOneByEmail(email: string): Promise<User | null> {
+  public async findOneByEmail(email: string): Promise<User> {
     const model = await this.dbService.user.findUnique({
       where: { email },
       include: USER_WITH_DEVICES,
     });
 
-    if (model) return UserMapper.toDomain(model);
-    else return null;
+    if (!model) throw new NotFoundException(`no user found for email ${email}`);
+    return UserMapper.toDomain(model);
   }
 
   public async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {

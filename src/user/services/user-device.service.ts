@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDeviceDto } from '../dto/create-user-device.dto';
 import { UserDevice } from '../entities/user-device.entity';
@@ -20,16 +20,22 @@ export class UserDeviceService {
 
   public async findAll(): Promise<UserDevice[]> {
     const models = await this.dbService.userDevice.findMany();
+
+    if (!models || models.length === 0)
+      throw new NotFoundException('no user devices found');
+
     return UserDeviceMapper.toDomainArray(models);
   }
 
-  public async findOne(id: number): Promise<UserDevice | null> {
+  public async findOne(id: number): Promise<UserDevice> {
     const model = await this.dbService.userDevice.findUnique({
       where: { id },
     });
 
-    if (model) return UserDeviceMapper.toDomain(model);
-    else return null;
+    if (!model)
+      throw new NotFoundException(`no user device found for id ${id}`);
+
+    return UserDeviceMapper.toDomain(model);
   }
 
   public async remove(id: number): Promise<{ deleted: boolean }> {

@@ -1,6 +1,6 @@
 export class CreateReportMatchDto {
-  lostReportId: number;
   foundReportId: number;
+  lostReportId: number;
   matchScore: number;
   distanceKilometers: number;
   status: string;

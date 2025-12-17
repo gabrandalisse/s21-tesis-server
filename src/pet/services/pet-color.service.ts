@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { PetColor } from '../entities/pet-color.entity';
 import { CreatePetColorDto } from '../dto/create-pet-color.dto';
@@ -17,6 +17,10 @@ export class PetColorService {
 
   public async findAll(): Promise<PetColor[]> {
     const results = await this.dbService.petColor.findMany();
+
+    if (!results || results.length === 0)
+      throw new NotFoundException('no pet color found');
+
     return PetColorMapper.toDomainArray(results);
   }
 

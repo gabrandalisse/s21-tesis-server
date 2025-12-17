@@ -8,9 +8,10 @@ import { ReportProcessor } from './queue/processors/report.processor';
 import { ReportMatchService } from './services/report-match.service';
 import { ReportTypeController } from './controllers/report-type.controller';
 import { ReportTypeService } from './services/report-type.service';
+import { ReportMatchController } from './controllers/report-match.controller';
 
 @Module({
-  controllers: [ReportController, ReportTypeController],
+  controllers: [ReportController, ReportTypeController, ReportMatchController],
   providers: [
     ReportService,
     ReportProcessor,

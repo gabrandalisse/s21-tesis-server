@@ -1,13 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Report } from '../entities/report.entity';
 import { ReportService } from './report.service';
 import { ReportTypeEnum } from 'src/enums/report.enums';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateReportMatchDto } from '../dto/create-report-match.dto';
 import DistanceUtils from 'src/utils/distance.utils';
-// import ReportMatchMapper from '../mappers/report-match.mapper';
 import { ReportMatch } from '../entities/report-match.entity';
 import { Pet } from 'src/pet/entities/pet.entity';
+import ReportMatchMapper from '../mappers/report-match.mapper';
+import { ReportMatchStatus } from 'src/enums/report-match.enums';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class ReportMatchService {
@@ -25,13 +27,21 @@ export class ReportMatchService {
       data: createReportMatchDto,
     });
 
-    // const match = ReportMatchMapper.toDomain(result);
-    // this.logger.log(`match created ${JSON.stringify(match)}`);
+    const match = ReportMatchMapper.toDomain(result);
+    this.logger.log(`match created ${JSON.stringify(match)}`);
 
-    console.log('\nRESULT', JSON.stringify(result), '\n');
+    return match;
+  }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return result as any;
+  public async findMatchByLostReportId(id: number): Promise<ReportMatch> {
+    const result = await this.dbService.reportMatch.findFirst({
+      where: { lostReportId: id },
+    });
+
+    if (!result)
+      throw new NotFoundException(`no matches found for lost report id ${id}`);
+
+    return ReportMatchMapper.toDomain(result);
   }
 
   public async findMatches(lostReport: Report): Promise<ReportMatch[]> {
@@ -92,8 +102,7 @@ export class ReportMatchService {
           foundReportId: found.getId(),
           matchScore: score,
           distanceKilometers,
-          // TODO agregar a constant
-          status: 'pending',
+          status: ReportMatchStatus.PENDIG,
         });
 
         matches.push(match);
@@ -103,8 +112,12 @@ export class ReportMatchService {
     return matches;
   }
 
-  private calculateMatchScore(lost: Pet, found: Pet): number {
+  private calculateMatchScore(lostPlain: Pet, found: Pet): number {
     let score = 0;
+    const lost = plainToClass(Pet, lostPlain);
+
+    // TODO agregar distinctive caracteristic
+    // TODO agregar descripcion del report
 
     if (found.getBreed() === lost.getBreed()) score += 0.3;
     if (found.getSex() === lost.getSex()) score += 0.3;

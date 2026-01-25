@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { ReportModule } from './report/report.module';
 import { AuthModule } from './auth/auth.module';
+import { UploadModule } from './upload/upload.module';
 import { BullModule } from '@nestjs/bullmq';
 
 @Module({
@@ -13,6 +14,7 @@ import { BullModule } from '@nestjs/bullmq';
     UserModule,
     ReportModule,
     AuthModule,
+    UploadModule,
     BullModule.forRoot({
       connection: {
         host: 'localhost',

@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsNumber, IsPositive, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsPositive, IsString, Min, Max } from 'class-validator';
 
 export class CreateReportDto {
   @IsNumber()
@@ -15,17 +15,25 @@ export class CreateReportDto {
   @IsString()
   description: string;
 
+  @IsOptional()
   @IsString()
-  photoUrl: string;
+  photoUrl?: string;
 
   @IsNumber()
+  @Min(-90)
+  @Max(90)
+  @Transform(({ value }) => parseFloat(value))
   lat: number;
 
   @IsNumber()
+  @Min(-180)
+  @Max(180)
+  @Transform(({ value }) => parseFloat(value))
   long: number;
 
+  @IsOptional()
   @IsNumber()
   @IsPositive()
   @Transform(({ value }) => Number(value))
-  reportedById: number;
+  reportedById?: number;
 }

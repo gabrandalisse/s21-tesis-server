@@ -21,8 +21,13 @@ export class ReportController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createReportDto: CreateReportDto) {
-    return this.reportService.create(createReportDto);
+  create(@Body() createReportDto: CreateReportDto, @Request() req: AuthenticatedRequest) {
+    // Set the reportedById from the authenticated user
+    const reportData = { 
+      ...createReportDto, 
+      reportedById: req.user.id 
+    };
+    return this.reportService.create(reportData);
   }
 
   @UseGuards(JwtAuthGuard)

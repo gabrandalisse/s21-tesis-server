@@ -5,11 +5,13 @@ import { Pet } from '../entities/pet.entity';
 import PetMapper from '../mappers/pet.mapper';
 import { PET_FULL_RELATIONS } from 'src/constants/includes.constants';
 
+type CreatePetData = CreatePetDto & { userId: number };
+
 @Injectable()
 export class PetService {
   constructor(private readonly dbService: DatabaseService) {}
 
-  public async create(createPetDto: CreatePetDto): Promise<Pet> {
+  public async create(createPetDto: CreatePetData): Promise<Pet> {
     const result = await this.dbService.pet.create({
       data: createPetDto,
     });

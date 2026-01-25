@@ -17,6 +17,14 @@ export class Pet {
     private readonly reports: any[],
   ) {}
 
+  public getId(): number {
+    return this.id;
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
   public getType(): string {
     return this.type;
   }
@@ -37,9 +45,37 @@ export class Pet {
     return this.sex;
   }
 
+  public getAge(): number {
+    return this.age;
+  }
+
+  public getPhotoUrl(): string {
+    return this.photoUrl;
+  }
+
+  public getDistinctiveCharacteristics(): string | undefined {
+    return this.distinctiveCharacteristics;
+  }
+
+  public getOwnerId(): number {
+    return this.owner.getId();
+  }
+
   public toJSON() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { reports, ...rest } = this;
-    return rest;
+    return {
+      id: this.id,
+      name: this.name,
+      userId: this.owner.getId(),
+      age: this.age,
+      photoUrl: this.photoUrl,
+      distinctiveCharacteristics: this.distinctiveCharacteristics,
+      createdAt: this.createdAt,
+      // Include type info as objects to match frontend expectations
+      type: { name: this.type },
+      breed: { name: this.breed },
+      color: { name: this.color },
+      size: { name: this.size },
+      sex: { name: this.sex },
+    };
   }
 }

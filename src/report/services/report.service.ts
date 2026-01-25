@@ -15,6 +15,8 @@ import {
 import { ReportTypeEnum } from 'src/enums/report.enums';
 import { Report } from '../entities/report.entity';
 
+type CreateReportData = CreateReportDto & { reportedById: number };
+
 @Injectable()
 export class ReportService {
   private readonly logger = new Logger(ReportService.name);
@@ -24,7 +26,7 @@ export class ReportService {
     private readonly dbService: DatabaseService,
   ) {}
 
-  public async create(createReportDto: CreateReportDto) {
+  public async create(createReportDto: CreateReportData) {
     const result = await this.dbService.report.create({
       data: createReportDto,
       include: REPORT_BASE_RELATIONS,

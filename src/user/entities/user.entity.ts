@@ -6,6 +6,7 @@ export class User {
     private readonly email: string,
     private readonly name: string,
     private password: string,
+    private readonly phone: string | null,
     private readonly lat: number,
     private readonly long: number,
     private readonly createdAt: Date,
@@ -18,6 +19,14 @@ export class User {
 
   public getEmail(): string {
     return this.email;
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public getPhone(): string | null {
+    return this.phone;
   }
 
   public getPassword(): string {
@@ -33,8 +42,14 @@ export class User {
   }
 
   public toJSON() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, createdAt, lat, long, ...rest } = this;
-    return rest;
+    return {
+      id: this.id,
+      email: this.email,
+      name: this.name,
+      phone: this.phone,
+      lat: this.lat,
+      long: this.long,
+      createdAt: this.createdAt,
+    };
   }
 }

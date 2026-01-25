@@ -1,11 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsNumber, IsPositive, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
 
 export class CreatePetDto {
+  @IsOptional()
   @IsNumber()
   @IsPositive()
   @Transform(({ value }) => Number(value))
-  userId: number;
+  userId?: number;
 
   @IsString()
   name: string;
@@ -43,6 +44,7 @@ export class CreatePetDto {
   @IsString()
   photoUrl: string;
 
+  @IsOptional()
   @IsString()
-  distinctiveCharacteristics: string | undefined;
+  distinctiveCharacteristics?: string;
 }

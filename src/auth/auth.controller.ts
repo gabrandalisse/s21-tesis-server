@@ -39,7 +39,19 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   login(@Request() req) {
-    return this.authService.login(req.user);
+    const loginResult = this.authService.login(req.user);
+    
+    return {
+      ...loginResult,
+      user: {
+        id: req.user.getId(),
+        email: req.user.getEmail(),
+        name: req.user.getName(),
+        phone: req.user.getPhone(),
+        lat: req.user.getLat(),
+        long: req.user.getLong(),
+      }
+    };
   }
 
   @UseGuards(LocalAuthGuard)

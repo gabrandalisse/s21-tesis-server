@@ -63,3 +63,5 @@ prisma/migrations/
 prisma/*.db
 prisma/*.db-journal
 /generated/prisma
+
+/uploads

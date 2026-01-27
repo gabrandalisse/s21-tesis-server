@@ -9,7 +9,6 @@ import { ReportMatch } from '../entities/report-match.entity';
 import { Pet } from 'src/pet/entities/pet.entity';
 import ReportMatchMapper from '../mappers/report-match.mapper';
 import { ReportMatchStatus } from 'src/enums/report-match.enums';
-import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class ReportMatchService {
@@ -42,6 +41,15 @@ export class ReportMatchService {
       throw new NotFoundException(`no matches found for lost report id ${id}`);
 
     return ReportMatchMapper.toDomain(result);
+  }
+
+  public async findAllMatchesByLostReportId(id: number): Promise<ReportMatch[]> {
+    const results = await this.dbService.reportMatch.findMany({
+      where: { lostReportId: id },
+      orderBy: { matchScore: 'desc' }, // Order by best matches first
+    });
+
+    return ReportMatchMapper.toDomainArray(results);
   }
 
   public async findMatches(lostReport: Report): Promise<ReportMatch[]> {
@@ -102,7 +110,7 @@ export class ReportMatchService {
           foundReportId: found.getId(),
           matchScore: score,
           distanceKilometers,
-          status: ReportMatchStatus.PENDIG,
+          status: ReportMatchStatus.PENDING,
         });
 
         matches.push(match);
@@ -112,18 +120,35 @@ export class ReportMatchService {
     return matches;
   }
 
-  private calculateMatchScore(lostPlain: Pet, found: Pet): number {
+  private calculateMatchScore(lost: Pet, found: Pet): number {
     let score = 0;
-    const lost = plainToClass(Pet, lostPlain);
 
     // TODO agregar distinctive caracteristic
     // TODO agregar descripcion del report
 
-    if (found.getBreed() === lost.getBreed()) score += 0.3;
-    if (found.getSex() === lost.getSex()) score += 0.3;
-    if (found.getType() === lost.getType()) score += 0.2;
-    if (found.getColor() === lost.getColor()) score += 0.1;
-    if (found.getSize() === lost.getSize()) score += 0.1;
+    this.logger.log(`Comparing pets - Lost: breed=${lost.getBreed()}, sex=${lost.getSex()}, type=${lost.getType()}, color=${lost.getColor()}, size=${lost.getSize()}`);
+    this.logger.log(`Comparing pets - Found: breed=${found.getBreed()}, sex=${found.getSex()}, type=${found.getType()}, color=${found.getColor()}, size=${found.getSize()}`);
+
+    if (found.getBreed() === lost.getBreed()) {
+      score += 0.3;
+      this.logger.log(`Breed match: ${found.getBreed()}`);
+    }
+    if (found.getSex() === lost.getSex()) {
+      score += 0.3;
+      this.logger.log(`Sex match: ${found.getSex()}`);
+    }
+    if (found.getType() === lost.getType()) {
+      score += 0.2;
+      this.logger.log(`Type match: ${found.getType()}`);
+    }
+    if (found.getColor() === lost.getColor()) {
+      score += 0.1;
+      this.logger.log(`Color match: ${found.getColor()}`);
+    }
+    if (found.getSize() === lost.getSize()) {
+      score += 0.1;
+      this.logger.log(`Size match: ${found.getSize()}`);
+    }
 
     return score;
   }

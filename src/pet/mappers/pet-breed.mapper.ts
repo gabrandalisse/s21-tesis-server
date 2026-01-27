@@ -14,4 +14,17 @@ export default class PetBreedMapper {
   static toDomainArray(prismaPetBreeds: PrismaPetBreed[]): PetBreed[] {
     return prismaPetBreeds.map((pb) => this.toDomain(pb));
   }
+
+  static toJSON(petBreed: PetBreed) {
+    return {
+      id: petBreed.getId(),
+      name: petBreed.getName(),
+      typeId: petBreed.getTypeId(),
+      createdAt: petBreed.getCreatedAt(),
+    };
+  }
+
+  static toJSONArray(petBreeds: PetBreed[]) {
+    return petBreeds.map((pb) => this.toJSON(pb));
+  }
 }

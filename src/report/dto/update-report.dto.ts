@@ -1,6 +1,12 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateReportDto } from './create-report.dto';
+import { IsBoolean, IsOptional } from 'class-validator';
 
 export class UpdateReportDto extends PartialType(CreateReportDto) {
-  matches: any;
+  @IsOptional()
+  @IsBoolean()
+  resolved?: boolean;
+
+  @IsOptional()
+  matches?: any;
 }

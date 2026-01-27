@@ -8,7 +8,7 @@ export class ReportMatchController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOnyByLostReportId(@Param('id') id: string) {
-    return this.reportMatchService.findMatchByLostReportId(+id);
+  findAllByLostReportId(@Param('id') id: string) {
+    return this.reportMatchService.findAllMatchesByLostReportId(+id);
   }
 }

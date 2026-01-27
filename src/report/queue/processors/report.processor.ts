@@ -1,7 +1,6 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { plainToClass } from 'class-transformer';
 import { REPORT_QUEUE_NAME } from 'src/constants/queue.constants';
 import { Report } from 'src/report/entities/report.entity';
 import { ReportMatchService } from 'src/report/services/report-match.service';
@@ -26,8 +25,15 @@ export class ReportProcessor extends WorkerHost {
     try {
       const { report: reportPlain } = job.data;
 
-      const report = plainToClass(Report, reportPlain);
-      const reportId = report.getId();
+      // Get the report ID from the plain object
+      const reportId = (reportPlain as any).id;
+      
+      if (!reportId) {
+        throw new Error('Report ID not found in job data');
+      }
+
+      // Fetch the full report with all relations from the database
+      const report = await this.reportService.findOne(reportId);
 
       const matches = await this.matchService.findMatches(report);
 

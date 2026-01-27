@@ -1,4 +1,4 @@
 export enum ReportTypeEnum {
-  LOST = 'lost',
-  FOUND = 'found',
+  LOST = 'Lost',
+  FOUND = 'Found',
 }

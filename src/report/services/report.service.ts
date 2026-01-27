@@ -27,6 +27,8 @@ export class ReportService {
   ) {}
 
   public async create(createReportDto: CreateReportData) {
+    this.logger.log(`Creating report with values: ${JSON.stringify(createReportDto)}`);
+
     const result = await this.dbService.report.create({
       data: createReportDto,
       include: REPORT_BASE_RELATIONS,
@@ -35,7 +37,7 @@ export class ReportService {
     const report = ReportMapper.toDomain(result);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-    if (report.getType().toLowerCase() === ReportTypeEnum.LOST)
+    if (report.getType() === ReportTypeEnum.LOST)
       await this.reportQueue.add(REPORT_CREATED_JOB_NAME, { report });
 
     // TODO add a queue for notifications? -> Yes!
@@ -52,7 +54,7 @@ export class ReportService {
 
     const dbResult = await this.dbService.report.findMany({
       include: REPORT_BASE_RELATIONS,
-      where: { resolved: false, ...options },
+      where: { ...options },
     });
 
     this.logger.log(`Found ${dbResult.length} reports in DB`);

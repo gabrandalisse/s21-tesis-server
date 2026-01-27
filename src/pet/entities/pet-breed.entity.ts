@@ -6,7 +6,19 @@ export class PetBreed {
     private readonly createdAt: Date,
   ) {}
 
+  public getId(): number {
+    return this.id;
+  }
+
   public getName(): string {
     return this.name;
+  }
+
+  public getTypeId(): number {
+    return this.typeId;
+  }
+
+  public getCreatedAt(): Date {
+    return this.createdAt;
   }
 }

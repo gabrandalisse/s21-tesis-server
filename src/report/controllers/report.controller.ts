@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { CreateReportDto } from '../dto/create-report.dto';
 import { UpdateReportDto } from '../dto/update-report.dto';
@@ -32,9 +33,10 @@ export class ReportController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Request() req: AuthenticatedRequest) {
+  findAll(@Request() req: AuthenticatedRequest, @Query('includeResolved') includeResolved?: string) {
     const { lat, long } = req.user;
-    return this.reportService.findAllByLatAndLong(lat, long);
+    const includeResolvedBool = includeResolved === 'true';
+    return this.reportService.findAllByLatAndLong(lat, long, { includeResolved: includeResolvedBool });
   }
 
   @UseGuards(JwtAuthGuard)

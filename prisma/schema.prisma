@@ -100,6 +100,8 @@ model User {
   pets      Pet[]
   devices   UserDevice[]
   reports   Report[]
+  chatParticipants ChatParticipant[]
+  messages  Message[]
 
   @@map("users")
 }
@@ -147,6 +149,7 @@ model Report {
 
   lostMatches  ReportMatch[] @relation("LostReport")
   foundMatches ReportMatch[] @relation("FoundReport")
+  chats        Chat[]
 
   @@map("reports")
 }
@@ -166,6 +169,53 @@ model ReportMatch {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("report_matches")
+}
+
+model Chat {
+  id Int @id @default(autoincrement())
+  
+  reportId Int @map("report_id")
+  report   Report @relation(fields: [reportId], references: [id])
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  messages Message[]
+  participants ChatParticipant[]
+
+  @@map("chats")
+}
+
+model ChatParticipant {
+  id Int @id @default(autoincrement())
+  
+  chatId Int @map("chat_id")
+  chat   Chat @relation(fields: [chatId], references: [id])
+  
+  userId Int @map("user_id")
+  user   User @relation(fields: [userId], references: [id])
+  
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  @@unique([chatId, userId])
+  @@map("chat_participants")
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+  
+  chatId Int @map("chat_id")
+  chat   Chat @relation(fields: [chatId], references: [id])
+  
+  senderId Int @map("sender_id")
+  sender   User @relation(fields: [senderId], references: [id])
+  
+  content String
+  read Boolean @default(false)
+  
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("messages")
 }
 
 

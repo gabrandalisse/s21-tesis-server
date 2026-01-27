@@ -70,10 +70,17 @@ export class ReportMatchService {
   }
 
   private async getFoundReports(lat: number, long: number): Promise<Report[]> {
-    const foundReports = await this.reportService.findAllByLatAndLong(
+    // We need to get found reports, but the current service method doesn't support filtering by report type
+    // For now, let's get all reports and filter them manually
+    const allReports = await this.reportService.findAllByLatAndLong(
       lat,
       long,
-      { reportType: { name: ReportTypeEnum.FOUND } },
+      { includeResolved: false },
+    );
+
+    // Filter for found reports only
+    const foundReports = allReports.filter(report => 
+      report.getType() === ReportTypeEnum.FOUND
     );
 
     this.logger.log(

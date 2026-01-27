@@ -48,13 +48,23 @@ export class ReportService {
   public async findAllByLatAndLong(
     lat: number,
     long: number,
-    options?: object,
+    options?: { includeResolved?: boolean },
   ) {
     this.logger.log(`Finding reports near lat: ${lat}, long: ${long}`);
 
+    // Build the where clause properly
+    const whereClause: any = {};
+    
+    // By default, exclude resolved reports unless explicitly requested
+    if (options?.includeResolved !== true) {
+      whereClause.resolved = false;
+    }
+
     const dbResult = await this.dbService.report.findMany({
       include: REPORT_BASE_RELATIONS,
-      where: { ...options },
+      where: whereClause,
+      orderBy: { reportedAt: 'desc' },
+      take: 100, // Limit to 100 most recent reports for performance
     });
 
     this.logger.log(`Found ${dbResult.length} reports in DB`);

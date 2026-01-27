@@ -38,9 +38,40 @@ export class Report {
     return this.long;
   }
 
+  public getReportedById(): number {
+    return this.reportedBy.getId();
+  }
+
+  public getReportedBy(): User {
+    return this.reportedBy;
+  }
+
+  public getResolved(): boolean {
+    return this.resolved;
+  }
+
+  public getDescription(): string {
+    return this.description;
+  }
+
+  public getPhotoUrl(): string | null {
+    return this.photoUrl;
+  }
+
+  public getReportedAt(): Date {
+    return this.reportedAt;
+  }
+
+  public getResolvedAt(): Date | null {
+    return this.resolvedAt;
+  }
+
   public toJSON() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { matches, ...rest } = this;
-    return rest;
+    return {
+      ...rest,
+      reportedById: this.reportedBy.getId(),
+    };
   }
 }

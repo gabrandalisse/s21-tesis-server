@@ -22,21 +22,34 @@ export class ReportController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createReportDto: CreateReportDto, @Request() req: AuthenticatedRequest) {
+  create(
+    @Body() createReportDto: CreateReportDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
     // Set the reportedById from the authenticated user
-    const reportData = { 
-      ...createReportDto, 
-      reportedById: req.user.id 
+    const reportData = {
+      ...createReportDto,
+      reportedById: req.user.id,
     };
     return this.reportService.create(reportData);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Request() req: AuthenticatedRequest, @Query('includeResolved') includeResolved?: string) {
+  findAll(
+    @Request() req: AuthenticatedRequest,
+    @Query('includeResolved') includeResolved?: string,
+  ) {
     const { lat, long } = req.user;
     const includeResolvedBool = includeResolved === 'true';
-    return this.reportService.findAllByLatAndLong(lat, long, { includeResolved: includeResolvedBool });
+    return this.reportService.findAllByLatAndLong(lat, long, {
+      includeResolved: includeResolvedBool,
+    });
+  }
+
+  @Get('public/recent')
+  findRecent() {
+    return this.reportService.findRecent(10);
   }
 
   @UseGuards(JwtAuthGuard)

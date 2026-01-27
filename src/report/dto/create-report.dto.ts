@@ -1,5 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsNumber, IsOptional, IsPositive, IsString, Min, Max } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Min,
+  Max,
+} from 'class-validator';
 
 export class CreateReportDto {
   @IsNumber()

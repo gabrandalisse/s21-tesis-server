@@ -11,11 +11,13 @@ export class Report {
     private readonly photoUrl: string | null,
     private readonly lat: number,
     private readonly long: number,
+    private readonly address: string | null,
     private readonly resolved: boolean,
     private readonly reportedBy: User,
     private readonly reportedAt: Date,
     private readonly resolvedAt: Date | null,
     private readonly matches: ReportMatch[],
+    private distanceKm?: number,
   ) {}
 
   public getId(): number {
@@ -36,6 +38,10 @@ export class Report {
 
   public getLong(): number {
     return this.long;
+  }
+
+  public getAddress(): string | null {
+    return this.address;
   }
 
   public getReportedById(): number {
@@ -66,12 +72,21 @@ export class Report {
     return this.resolvedAt;
   }
 
+  public getDistanceKm(): number | undefined {
+    return this.distanceKm;
+  }
+
+  public setDistanceKm(distance: number): void {
+    this.distanceKm = distance;
+  }
+
   public toJSON() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { matches, ...rest } = this;
     return {
       ...rest,
       reportedById: this.reportedBy.getId(),
+      distanceKm: this.distanceKm,
     };
   }
 }

@@ -38,6 +38,7 @@ export default class ReportMapper {
       prismaReport.photoUrl,
       prismaReport.lat,
       prismaReport.long,
+      prismaReport.address,
       prismaReport.resolved,
       UserMapper.toDomain(prismaReport.reportedBy),
       prismaReport.reportedAt,

@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "backfill:addresses": "ts-node -r tsconfig-paths/register scripts/backfill-addresses.ts"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.4",
@@ -33,6 +34,7 @@
     "@prisma/client": "^6.19.0",
     "@types/multer": "^2.0.0",
     "@types/uuid": "^10.0.0",
+    "@types/web-push": "^3.6.4",
     "bullmq": "^5.64.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -44,7 +46,8 @@
     "rxjs": "^7.8.1",
     "socket.io": "^4.8.3",
     "sqlite3": "^5.1.7",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

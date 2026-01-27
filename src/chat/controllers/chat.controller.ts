@@ -20,7 +20,10 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post()
-  createChat(@Body() createChatDto: CreateChatDto, @Request() req: AuthenticatedRequest) {
+  createChat(
+    @Body() createChatDto: CreateChatDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
     return this.chatService.createChat(createChatDto, req.user.id);
   }
 
@@ -35,12 +38,18 @@ export class ChatController {
   }
 
   @Post('message')
-  sendMessage(@Body() createMessageDto: CreateMessageDto, @Request() req: AuthenticatedRequest) {
+  sendMessage(
+    @Body() createMessageDto: CreateMessageDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
     return this.chatService.sendMessage(createMessageDto, req.user.id);
   }
 
   @Patch(':id/read')
-  markMessagesAsRead(@Param('id') id: string, @Request() req: AuthenticatedRequest) {
+  markMessagesAsRead(
+    @Param('id') id: string,
+    @Request() req: AuthenticatedRequest,
+  ) {
     return this.chatService.markMessagesAsRead(+id, req.user.id);
   }
 }

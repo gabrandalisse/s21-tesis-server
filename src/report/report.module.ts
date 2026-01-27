@@ -9,6 +9,7 @@ import { ReportMatchService } from './services/report-match.service';
 import { ReportTypeController } from './controllers/report-type.controller';
 import { ReportTypeService } from './services/report-type.service';
 import { ReportMatchController } from './controllers/report-match.controller';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   controllers: [ReportController, ReportTypeController, ReportMatchController],
@@ -20,6 +21,7 @@ import { ReportMatchController } from './controllers/report-match.controller';
   ],
   imports: [
     DatabaseModule,
+    NotificationModule,
     BullModule.registerQueue({
       name: REPORT_QUEUE_NAME,
     }),

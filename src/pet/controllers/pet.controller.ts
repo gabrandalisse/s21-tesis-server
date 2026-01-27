@@ -19,11 +19,14 @@ export class PetController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createPetDto: CreatePetDto, @Request() req: AuthenticatedRequest) {
+  create(
+    @Body() createPetDto: CreatePetDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
     // Ensure userId is set from the authenticated user
-    const petData = { 
-      ...createPetDto, 
-      userId: req.user.id 
+    const petData = {
+      ...createPetDto,
+      userId: req.user.id,
     };
     return this.petService.create(petData);
   }

@@ -43,7 +43,9 @@ export class ReportMatchService {
     return ReportMatchMapper.toDomain(result);
   }
 
-  public async findAllMatchesByLostReportId(id: number): Promise<ReportMatch[]> {
+  public async findAllMatchesByLostReportId(
+    id: number,
+  ): Promise<ReportMatch[]> {
     const results = await this.dbService.reportMatch.findMany({
       where: { lostReportId: id },
       orderBy: { matchScore: 'desc' }, // Order by best matches first
@@ -72,15 +74,13 @@ export class ReportMatchService {
   private async getFoundReports(lat: number, long: number): Promise<Report[]> {
     // We need to get found reports, but the current service method doesn't support filtering by report type
     // For now, let's get all reports and filter them manually
-    const allReports = await this.reportService.findAllByLatAndLong(
-      lat,
-      long,
-      { includeResolved: false },
-    );
+    const allReports = await this.reportService.findAllByLatAndLong(lat, long, {
+      includeResolved: false,
+    });
 
     // Filter for found reports only
-    const foundReports = allReports.filter(report => 
-      report.getType() === ReportTypeEnum.FOUND
+    const foundReports = allReports.filter(
+      (report) => report.getType() === ReportTypeEnum.FOUND,
     );
 
     this.logger.log(
@@ -133,8 +133,12 @@ export class ReportMatchService {
     // TODO agregar distinctive caracteristic
     // TODO agregar descripcion del report
 
-    this.logger.log(`Comparing pets - Lost: breed=${lost.getBreed()}, sex=${lost.getSex()}, type=${lost.getType()}, color=${lost.getColor()}, size=${lost.getSize()}`);
-    this.logger.log(`Comparing pets - Found: breed=${found.getBreed()}, sex=${found.getSex()}, type=${found.getType()}, color=${found.getColor()}, size=${found.getSize()}`);
+    this.logger.log(
+      `Comparing pets - Lost: breed=${lost.getBreed()}, sex=${lost.getSex()}, type=${lost.getType()}, color=${lost.getColor()}, size=${lost.getSize()}`,
+    );
+    this.logger.log(
+      `Comparing pets - Found: breed=${found.getBreed()}, sex=${found.getSex()}, type=${found.getType()}, color=${found.getColor()}, size=${found.getSize()}`,
+    );
 
     if (found.getBreed() === lost.getBreed()) {
       score += 0.3;

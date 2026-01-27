@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateChatDto } from '../dto/create-chat.dto';
 import { CreateMessageDto } from '../dto/create-message.dto';
@@ -10,7 +15,9 @@ export class ChatService {
   constructor(private readonly dbService: DatabaseService) {}
 
   async createChat(createChatDto: CreateChatDto, creatorId: number) {
-    this.logger.log(`Creating chat for report ${createChatDto.reportId} with participants: ${createChatDto.participantIds.join(', ')}`);
+    this.logger.log(
+      `Creating chat for report ${createChatDto.reportId} with participants: ${createChatDto.participantIds.join(', ')}`,
+    );
 
     // Check if chat already exists for this report and participants
     const existingChat = await this.dbService.chat.findFirst({
@@ -18,19 +25,19 @@ export class ChatService {
         reportId: createChatDto.reportId,
         participants: {
           every: {
-            userId: { in: [...createChatDto.participantIds, creatorId] }
-          }
-        }
+            userId: { in: [...createChatDto.participantIds, creatorId] },
+          },
+        },
       },
       include: {
         participants: {
-          include: { user: true }
+          include: { user: true },
         },
         messages: {
           include: { sender: true },
-          orderBy: { createdAt: 'asc' }
-        }
-      }
+          orderBy: { createdAt: 'asc' },
+        },
+      },
     });
 
     if (existingChat) {
@@ -43,20 +50,20 @@ export class ChatService {
         reportId: createChatDto.reportId,
         participants: {
           create: [
-            ...createChatDto.participantIds.map(userId => ({ userId })),
-            { userId: creatorId }
-          ]
-        }
+            ...createChatDto.participantIds.map((userId) => ({ userId })),
+            { userId: creatorId },
+          ],
+        },
       },
       include: {
         participants: {
-          include: { user: true }
+          include: { user: true },
         },
         messages: {
           include: { sender: true },
-          orderBy: { createdAt: 'asc' }
-        }
-      }
+          orderBy: { createdAt: 'asc' },
+        },
+      },
     });
 
     return chat;
@@ -68,27 +75,27 @@ export class ChatService {
     const chats = await this.dbService.chat.findMany({
       where: {
         participants: {
-          some: { userId }
-        }
+          some: { userId },
+        },
       },
       include: {
         report: {
           include: {
             pet: true,
             reportType: true,
-            reportedBy: true
-          }
+            reportedBy: true,
+          },
         },
         participants: {
-          include: { user: true }
+          include: { user: true },
         },
         messages: {
           include: { sender: true },
           orderBy: { createdAt: 'desc' },
-          take: 1 // Get only the last message for preview
-        }
+          take: 1, // Get only the last message for preview
+        },
       },
-      orderBy: { updatedAt: 'desc' }
+      orderBy: { updatedAt: 'desc' },
     });
 
     return chats;
@@ -101,25 +108,25 @@ export class ChatService {
       where: {
         id: chatId,
         participants: {
-          some: { userId }
-        }
+          some: { userId },
+        },
       },
       include: {
         report: {
           include: {
             pet: true,
             reportType: true,
-            reportedBy: true
-          }
+            reportedBy: true,
+          },
         },
         participants: {
-          include: { user: true }
+          include: { user: true },
         },
         messages: {
           include: { sender: true },
-          orderBy: { createdAt: 'asc' }
-        }
-      }
+          orderBy: { createdAt: 'asc' },
+        },
+      },
     });
 
     if (!chat) {
@@ -130,16 +137,18 @@ export class ChatService {
   }
 
   async sendMessage(createMessageDto: CreateMessageDto, senderId: number) {
-    this.logger.log(`Sending message to chat ${createMessageDto.chatId} from user ${senderId}`);
+    this.logger.log(
+      `Sending message to chat ${createMessageDto.chatId} from user ${senderId}`,
+    );
 
     // Verify user is participant in the chat
     const chat = await this.dbService.chat.findFirst({
       where: {
         id: createMessageDto.chatId,
         participants: {
-          some: { userId: senderId }
-        }
-      }
+          some: { userId: senderId },
+        },
+      },
     });
 
     if (!chat) {
@@ -150,40 +159,42 @@ export class ChatService {
       data: {
         chatId: createMessageDto.chatId,
         senderId,
-        content: createMessageDto.content
+        content: createMessageDto.content,
       },
       include: {
         sender: true,
         chat: {
           include: {
             participants: {
-              include: { user: true }
-            }
-          }
-        }
-      }
+              include: { user: true },
+            },
+          },
+        },
+      },
     });
 
     // Update chat's updatedAt timestamp
     await this.dbService.chat.update({
       where: { id: createMessageDto.chatId },
-      data: { updatedAt: new Date() }
+      data: { updatedAt: new Date() },
     });
 
     return message;
   }
 
   async markMessagesAsRead(chatId: number, userId: number) {
-    this.logger.log(`Marking messages as read in chat ${chatId} for user ${userId}`);
+    this.logger.log(
+      `Marking messages as read in chat ${chatId} for user ${userId}`,
+    );
 
     // Verify user is participant in the chat
     const chat = await this.dbService.chat.findFirst({
       where: {
         id: chatId,
         participants: {
-          some: { userId }
-        }
-      }
+          some: { userId },
+        },
+      },
     });
 
     if (!chat) {
@@ -195,9 +206,9 @@ export class ChatService {
       where: {
         chatId,
         senderId: { not: userId },
-        read: false
+        read: false,
       },
-      data: { read: true }
+      data: { read: true },
     });
 
     return { success: true };

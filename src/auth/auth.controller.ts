@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Controller, Get, Post, Request, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+  Body,
+} from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt.guard';
@@ -19,10 +26,10 @@ export class AuthController {
   async register(@Body() createUserDto: CreateUserDto) {
     // Create the user
     const user = await this.userService.create(createUserDto);
-    
+
     // Return the user with access token (auto-login after registration)
     const loginResult = this.authService.login(user);
-    
+
     return {
       ...loginResult,
       user: {
@@ -32,7 +39,7 @@ export class AuthController {
         phone: user.getPhone(),
         lat: user.getLat(),
         long: user.getLong(),
-      }
+      },
     };
   }
 
@@ -40,7 +47,7 @@ export class AuthController {
   @Post('login')
   login(@Request() req) {
     const loginResult = this.authService.login(req.user);
-    
+
     return {
       ...loginResult,
       user: {
@@ -50,7 +57,7 @@ export class AuthController {
         phone: req.user.getPhone(),
         lat: req.user.getLat(),
         long: req.user.getLong(),
-      }
+      },
     };
   }
 

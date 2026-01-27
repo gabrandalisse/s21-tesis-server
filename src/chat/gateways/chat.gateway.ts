@@ -22,7 +22,7 @@ interface AuthenticatedSocket extends Socket {
     origin: [
       'http://localhost:3000',
       'http://localhost:3002',
-      process.env.FRONTEND_URL || 'http://localhost:3000'
+      process.env.FRONTEND_URL || 'http://localhost:3000',
     ],
     credentials: true,
   },
@@ -43,12 +43,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: AuthenticatedSocket) {
     try {
       // Extract token from handshake auth or headers
-      const token = client.handshake.auth?.token || 
-                   client.handshake.headers?.authorization?.replace('Bearer ', '') ||
-                   client.handshake.query?.token;
-      
-      this.logger.log(`Connection attempt with token: ${token ? 'Present' : 'Missing'}`);
-      
+      const token =
+        client.handshake.auth?.token ||
+        client.handshake.headers?.authorization?.replace('Bearer ', '') ||
+        client.handshake.query?.token;
+
+      this.logger.log(
+        `Connection attempt with token: ${token ? 'Present' : 'Missing'}`,
+      );
+
       if (!token) {
         this.logger.warn('Client connected without token');
         client.disconnect();
@@ -59,20 +62,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.logger.log('Attempting to verify JWT token...');
       const payload = this.jwtService.verify(token);
       this.logger.log(`JWT payload: ${JSON.stringify(payload)}`);
-      
+
       // The JWT payload uses 'id' field, not 'sub'
       client.userId = payload.id || payload.sub;
-      
+
       // Store connection
       if (client.userId) {
         this.connectedUsers.set(client.userId, client.id);
       }
-      
-      this.logger.log(`User ${client.userId} connected with socket ${client.id}`);
-      
+
+      this.logger.log(
+        `User ${client.userId} connected with socket ${client.id}`,
+      );
+
       // Join user to their personal room for notifications
       await client.join(`user_${client.userId}`);
-      
     } catch (error) {
       this.logger.error('Authentication failed for socket connection', error);
       client.disconnect();
@@ -96,17 +100,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { error: 'Not authenticated' };
     }
 
-    this.logger.log(`User ${client.userId} attempting to join chat ${data.chatId}`);
+    this.logger.log(
+      `User ${client.userId} attempting to join chat ${data.chatId}`,
+    );
 
     try {
       // Verify user has access to this chat
       await this.chatService.getChatById(data.chatId, client.userId);
-      
+
       // Join the chat room
       await client.join(`chat_${data.chatId}`);
-      
-      this.logger.log(`✅ User ${client.userId} successfully joined chat ${data.chatId}`);
-      
+
+      this.logger.log(
+        `✅ User ${client.userId} successfully joined chat ${data.chatId}`,
+      );
+
       return { success: true };
     } catch (error) {
       this.logger.error(`❌ Failed to join chat ${data.chatId}:`, error);
@@ -134,13 +142,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { error: 'Not authenticated' };
     }
 
-    this.logger.log(`Received message from user ${client.userId} for chat ${createMessageDto.chatId}: "${createMessageDto.content}"`);
+    this.logger.log(
+      `Received message from user ${client.userId} for chat ${createMessageDto.chatId}: "${createMessageDto.content}"`,
+    );
 
     try {
-      const message = await this.chatService.sendMessage(createMessageDto, client.userId);
-      
-      this.logger.log(`Message saved with ID ${message.id}, broadcasting to chat_${createMessageDto.chatId}`);
-      
+      const message = await this.chatService.sendMessage(
+        createMessageDto,
+        client.userId,
+      );
+
+      this.logger.log(
+        `Message saved with ID ${message.id}, broadcasting to chat_${createMessageDto.chatId}`,
+      );
+
       // Emit message to all OTHER participants in the chat (exclude sender)
       client.to(`chat_${createMessageDto.chatId}`).emit('new_message', {
         id: message.id,
@@ -153,11 +168,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
 
       // Send push notifications to offline users
-      const participants = message.chat.participants.filter(p => p.userId !== client.userId);
+      const participants = message.chat.participants.filter(
+        (p) => p.userId !== client.userId,
+      );
       for (const participant of participants) {
         if (!this.connectedUsers.has(participant.userId)) {
           // User is offline, could send push notification here
-          this.logger.log(`User ${participant.userId} is offline, should send push notification`);
+          this.logger.log(
+            `User ${participant.userId} is offline, should send push notification`,
+          );
         }
       }
 
@@ -179,7 +198,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     try {
       await this.chatService.markMessagesAsRead(data.chatId, client.userId);
-      
+
       // Notify other participants that messages were read
       client.to(`chat_${data.chatId}`).emit('messages_read', {
         chatId: data.chatId,

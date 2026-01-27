@@ -69,7 +69,7 @@ export class UploadController {
   @Get('pets/:filename')
   getPetPhoto(@Param('filename') filename: string, @Res() res: Response) {
     const filePath = path.join(process.cwd(), 'uploads', 'pets', filename);
-    
+
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ message: 'File not found' });
     }
@@ -80,7 +80,7 @@ export class UploadController {
   @Get('reports/:filename')
   getReportPhoto(@Param('filename') filename: string, @Res() res: Response) {
     const filePath = path.join(process.cwd(), 'uploads', 'reports', filename);
-    
+
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ message: 'File not found' });
     }

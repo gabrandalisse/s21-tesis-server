@@ -5,6 +5,7 @@ import { REPORT_QUEUE_NAME } from 'src/constants/queue.constants';
 import { Report } from 'src/report/entities/report.entity';
 import { ReportMatchService } from 'src/report/services/report-match.service';
 import { ReportService } from 'src/report/services/report.service';
+import { NotificationService } from 'src/notification/services/notification.service';
 
 @Processor(REPORT_QUEUE_NAME)
 export class ReportProcessor extends WorkerHost {
@@ -13,6 +14,7 @@ export class ReportProcessor extends WorkerHost {
   constructor(
     private readonly matchService: ReportMatchService,
     private readonly reportService: ReportService,
+    private readonly notificationService: NotificationService,
   ) {
     super();
   }
@@ -27,7 +29,7 @@ export class ReportProcessor extends WorkerHost {
 
       // Get the report ID from the plain object
       const reportId = (reportPlain as any).id;
-      
+
       if (!reportId) {
         throw new Error('Report ID not found in job data');
       }
@@ -46,7 +48,8 @@ export class ReportProcessor extends WorkerHost {
         `${matches.length} matches found for report id ${reportId}`,
       );
 
-      // TODO notify user
+      // Notify user about matches
+      await this.sendMatchNotifications(report, matches.length);
 
       this.logger.log(`Report job with id: ${job.id} has been completed.`);
     } catch (error: unknown) {
@@ -55,6 +58,31 @@ export class ReportProcessor extends WorkerHost {
       );
 
       throw error;
+    }
+  }
+
+  private async sendMatchNotifications(report: Report, matchCount: number): Promise<void> {
+    try {
+      const petType = report.getPet().getType();
+      const petBreed = report.getPet().getBreed();
+      const ownerId = report.getReportedBy().getId();
+
+      await this.notificationService.sendToUser(ownerId, {
+        title: '¡Posibles coincidencias encontradas!',
+        body: `Encontramos ${matchCount} ${matchCount === 1 ? 'coincidencia' : 'coincidencias'} para tu ${petType} ${petBreed} perdido`,
+        data: {
+          reportId: report.getId(),
+          type: 'matches_found',
+          matchCount,
+          url: `/report/${report.getId()}`,
+        },
+        tag: `matches-${report.getId()}`,
+        requireInteraction: true,
+      });
+
+      this.logger.log(`Sent match notification to user ${ownerId} for report ${report.getId()}`);
+    } catch (error) {
+      this.logger.error(`Failed to send match notifications:`, error);
     }
   }
 }

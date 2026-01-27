@@ -44,6 +44,17 @@ export class PetService {
   }
 
   public async remove(id: number): Promise<{ deleted: boolean }> {
+    // Check if pet has associated reports
+    const reportsCount = await this.dbService.report.count({
+      where: { petId: id },
+    });
+
+    if (reportsCount > 0) {
+      throw new Error(
+        `Cannot delete pet with ${reportsCount} associated report(s). Please delete or reassign the reports first.`,
+      );
+    }
+
     const result = await this.dbService.pet.delete({
       where: { id },
     });

@@ -14,6 +14,8 @@ import {
 } from 'src/constants/queue.constants';
 import { ReportTypeEnum } from 'src/enums/report.enums';
 import { Report } from '../entities/report.entity';
+import { GeocodingUtils } from 'src/utils/geocoding.utils';
+import { NotificationService } from 'src/notification/services/notification.service';
 
 type CreateReportData = CreateReportDto & { reportedById: number };
 
@@ -24,13 +26,25 @@ export class ReportService {
   constructor(
     @InjectQueue(REPORT_QUEUE_NAME) private readonly reportQueue: Queue,
     private readonly dbService: DatabaseService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   public async create(createReportDto: CreateReportData) {
-    this.logger.log(`Creating report with values: ${JSON.stringify(createReportDto)}`);
+    this.logger.log(
+      `Creating report with values: ${JSON.stringify(createReportDto)}`,
+    );
+
+    // Geocode the address from coordinates
+    const address = await GeocodingUtils.reverseGeocode(
+      createReportDto.lat,
+      createReportDto.long,
+    );
 
     const result = await this.dbService.report.create({
-      data: createReportDto,
+      data: {
+        ...createReportDto,
+        address,
+      },
       include: REPORT_BASE_RELATIONS,
     });
 
@@ -40,7 +54,10 @@ export class ReportService {
     if (report.getType() === ReportTypeEnum.LOST)
       await this.reportQueue.add(REPORT_CREATED_JOB_NAME, { report });
 
-    // TODO add a queue for notifications? -> Yes!
+    // Send push notifications to nearby users
+    this.sendReportCreatedNotifications(report).catch((error) =>
+      this.logger.error('Failed to send report notifications:', error),
+    );
 
     return report;
   }
@@ -54,7 +71,7 @@ export class ReportService {
 
     // Build the where clause properly
     const whereClause: any = {};
-    
+
     // By default, exclude resolved reports unless explicitly requested
     if (options?.includeResolved !== true) {
       whereClause.resolved = false;
@@ -79,6 +96,9 @@ export class ReportService {
         report.getLong(),
       );
 
+      // Set distance on the report
+      report.setDistanceKm(distanceKm);
+
       return distanceKm <= REPORT_MAX_DISTANCE_KM;
     });
 
@@ -86,7 +106,48 @@ export class ReportService {
       `Filtered to ${filteredReports.length} reports within ${REPORT_MAX_DISTANCE_KM} km`,
     );
 
+    // Geocode addresses for reports that don't have one
+    const reportsNeedingGeocode = filteredReports.filter(
+      (report) => !report.getAddress(),
+    );
+
+    if (reportsNeedingGeocode.length > 0) {
+      this.logger.log(
+        `Geocoding ${reportsNeedingGeocode.length} reports without addresses`,
+      );
+
+      // Update reports with addresses in the background (don't await)
+      this.geocodeReportsInBackground(reportsNeedingGeocode).catch((error) =>
+        this.logger.error(`Error geocoding reports: ${error.message}`),
+      );
+    }
+
     return filteredReports;
+  }
+
+  private async geocodeReportsInBackground(reports: Report[]): Promise<void> {
+    for (const report of reports) {
+      try {
+        const address = await GeocodingUtils.reverseGeocode(
+          report.getLat(),
+          report.getLong(),
+        );
+
+        await this.dbService.report.update({
+          where: { id: report.getId() },
+          data: { address },
+        });
+
+        this.logger.log(`Updated address for report ${report.getId()}`);
+      } catch (error) {
+        this.logger.error(
+          `Failed to geocode report ${report.getId()}: ${error.message}`,
+        );
+      }
+
+      // Add delay to respect Nominatim usage policy
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   }
 
   public async findOne(id: number): Promise<Report> {
@@ -115,5 +176,49 @@ export class ReportService {
     });
 
     return { deleted: result !== null };
+  }
+
+  public async findRecent(limit: number = 10): Promise<Report[]> {
+    this.logger.log(`Finding ${limit} most recent reports`);
+
+    const dbResult = await this.dbService.report.findMany({
+      include: REPORT_BASE_RELATIONS,
+      where: { resolved: false },
+      orderBy: { reportedAt: 'desc' },
+      take: limit,
+    });
+
+    this.logger.log(`Found ${dbResult.length} recent reports`);
+
+    return ReportMapper.toDomainArray(dbResult);
+  }
+
+  private async sendReportCreatedNotifications(report: Report): Promise<void> {
+    try {
+      const reportType = report.getType() === ReportTypeEnum.LOST ? 'perdida' : 'encontrada';
+      const petType = report.getPet().getType();
+      const petBreed = report.getPet().getBreed();
+
+      await this.notificationService.sendToUsersInRadius(
+        report.getLat(),
+        report.getLong(),
+        REPORT_MAX_DISTANCE_KM,
+        {
+          title: `Nueva mascota ${reportType} cerca de ti`,
+          body: `Se reportó un ${petType} ${petBreed} ${reportType} en tu área`,
+          data: {
+            reportId: report.getId(),
+            type: 'report_created',
+            url: `/report/${report.getId()}`,
+          },
+          tag: `report-${report.getId()}`,
+        },
+        report.getReportedBy().getId(), // Exclude the report creator
+      );
+
+      this.logger.log(`Sent notifications for report ${report.getId()}`);
+    } catch (error) {
+      this.logger.error(`Failed to send notifications for report ${report.getId()}:`, error);
+    }
   }
 }

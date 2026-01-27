@@ -139,6 +139,7 @@ model Report {
   photoUrl    String? @map("photo_url")
   lat         Float
   long        Float
+  address     String?
   resolved    Boolean @default(false)
 
   reportedById Int  @map("user_id")
